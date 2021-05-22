@@ -1,0 +1,13 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Creating btrfs snapshot
+When = PreTransaction
+Exec = /usr/bin/autosnap
+AbortOnFail
+
