@@ -103,7 +103,7 @@ After this, generate the filesystem table using
 Add swapfile 
 `echo "/swap/swapfile none swap defaults 0 0" >> /mnt/etc/fstab `
 
-### Chroot into the new system and change lanague settings
+### Chroot into the new system and change language settings
 
 ```
 arch-chroot /mnt
@@ -304,7 +304,7 @@ Reboot and login to your new Desktop.
 I like to use oh-my-zsh with Powerlevel10K theme
 
 ```
-sudo pacman -Sy git git-lfs curl wget zsh zsh-completion firefox-i18n-de
+sudo pacman -Sy git git-lfs curl wget zsh zsh-completions firefox-i18n-de
 chsh -s /bin/zsh # (relogin to activate)
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 mkdir .local/share/fonts
@@ -350,22 +350,28 @@ sudo systemctl disable lightdm
 sudo systemctl enable lightdm-plymouth
 ```
 
-For Theming and more Options, check [Plymouth on Arch Wiki](https://wiki.archlinux.org/title/plymouth) 
+For Plymouth Theming and Options, check [Plymouth on Arch Wiki](https://wiki.archlinux.org/title/plymouth) 
 
-Reboot..
+For XFCE4 Theming you could check this nice [Youtube Video from Linux Scoop](https://www.youtube.com/watch?v=X3siZNJN3ec)
+
 
 ## Nvidia, No-Noise-Fan Curves
 
-Install latest nvidia driver, Rust Language and checkout the nice asusctl tool from [Luke Jones](https://asus-linux.org/)
+### Install latest nvidia driver
 
 ```
-sudo pacman -Sy nvidia rust acpi_call
-cd AUR
-git clone https://aur.archlinux.org/asusctl-git.git
-cd asusctl-git
-makepkg -is
-reboot
+sudo pacman -Sy nvidia acpi_call
 ```
+
+### Install asusctl tool from [Luke Jones](https://asus-linux.org/)
+
+Add his Repo to pacman.conf
+```
+sudo bash -c "echo -e '\r[G14]\nSigLevel = DatabaseNever Optional TrustAll\nServer = https://arch.asus-linux.org\n' >> /etc/pacman.conf"
+
+sudo pacman -Sy asusctl
+```
+Optional: Copy my asusd profile to `/etc/asusd/asusd.conf` or make your own profiles and Fan-Curves
 
 Activate DBUS Messaging for the new asus deamon
 
@@ -376,6 +382,5 @@ systemctl --user start asus-notify
 
 For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS_GA401I#ASUSCtl) or the [Repository from Luke](https://gitlab.com/asus-linux/asusctl)
 
-Copy my asusd profile to `/etc/asusd/asusd.conf` 
 
 I deactivate CPU Boost in Normal and Silent Profile, my G14 now totally cool and silent in normal Office - and Dev-Work with multiple virtual machines running.
