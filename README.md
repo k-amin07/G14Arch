@@ -1,7 +1,7 @@
 # Arch Linux on Asus ROG Zephyrus G14 (G401II)
 My own notes installing Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on my Asus ROG Zephyrus G14
 
-![desk](desk.png)
+![desk](desk_v2.png)
 
 [TOC]
 
