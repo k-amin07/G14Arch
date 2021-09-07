@@ -367,7 +367,7 @@ sudo pacman -Sy nvidia acpi_call
 
 Add his Repo to pacman.conf
 ```
-sudo bash -c "echo -e '\r[G14]\nSigLevel = DatabaseNever Optional TrustAll\nServer = https://arch.asus-linux.org\n' >> /etc/pacman.conf"
+sudo bash -c "echo -e '\r[g14]\nSigLevel = DatabaseNever Optional TrustAll\nServer = https://arch.asus-linux.org\n' >> /etc/pacman.conf"
 
 sudo pacman -Sy asusctl
 ```
