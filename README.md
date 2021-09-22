@@ -1,3 +1,44 @@
+# Table of Content
+  * [Basic Install](#basic-install)
+    + [Prepare and Booting ISO](#prepare-and-booting-iso)
+    + [Networking](#networking)
+    + [Format Disk](#format-disk)
+    + [Create encrypted filesystem](#create-encrypted-filesystem)
+    + [Create and Mount btrfs Subvolumes](#create-and-mount-btrfs-subvolumes)
+    + [Create a btrfs swapfile and remount subvols](#create-a-btrfs-swapfile-and-remount-subvols)
+    + [Install the system using pacstrap](#install-the-system-using-pacstrap)
+    + [Chroot into the new system and change language settings](#chroot-into-the-new-system-and-change-language-settings)
+    + [Add btrfs and encrypt to Initramfs](#add-btrfs-and-encrypt-to-initramfs)
+    + [Install Systemd Bootloader](#install-systemd-bootloader)
+    + [Set nvidia-nouveau onto blacklist](#set-nvidia-nouveau-onto-blacklist)
+    + [Leave Chroot and Reboot](#leave-chroot-and-reboot)
+  * [Finetuning after first Reboot](#finetuning-after-first-reboot)
+    + [Enable Networkmanager](#enable-networkmanager)
+    + [Create a new user](#create-a-new-user)
+  * [Setup Automatic Snapshots for pacman:](#setup-automatic-snapshots-for-pacman-)
+  * [Install Desktop Environment](#install-desktop-environment)
+    + [Get X.Org and KDE Plasma](#get-xorg-and-kde-plasma)
+    + [Oh-My-ZSH](#oh-my-zsh)
+    + [Setup Plymouth for nice Password Prompt during Boot](#setup-plymouth-for-nice-password-prompt-during-boot)
+  * [Useful Customizations:](#useful-customizations-)
+    + [Install asusctl tool from [Luke Jones](https://asus-linux.org/)](#install-asusctl-tool-from--luke-jones--https---asus-linuxorg--)
+    + [Battery limit:](#battery-limit-)
+    + [Installing a custom kernel:](#installing-a-custom-kernel-)
+    + [ROG Key Map](#rog-key-map)
+    + [Change Fan Profile:](#change-fan-profile-)
+    + [Mic Mute Key:](#mic-mute-key-)
+    + [Powertop](#powertop)
+  * [Nvidia](#nvidia)
+  * [Optimus Manager:](#optimus-manager-)
+  * [Miscellaneous](#miscellaneous)
+    + [Fetch on Terminal Start](#fetch-on-terminal-start)
+    + [Key delay](#key-delay)
+  * [KDE Tweaks:](#kde-tweaks-)
+    + [Open In First Virtual Desktop:](#open-in-first-virtual-desktop-)
+    + [Touchpad Gestures:](#touchpad-gestures-)
+    + [Yet Another Magic Lamp:](#yet-another-magic-lamp-)
+    + [Maximize to new desktop ([git](https://github.com/Aetf/kwin-maxmize-to-new-desktop#window-class-blacklist-in-configuration-is-blank)):](#maximize-to-new-desktop---git--https---githubcom-aetf-kwin-maxmize-to-new-desktop-window-class-blacklist-in-configuration-is-blank---)
+
 # Arch Linux on Asus ROG Zephyrus G14 (G401II)
 Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on Asus ROG Zephyrus G14. Credits to [Unim8rix](https://github.com/Unim8trix/G14Arch), this guide is a fork of their guide with some variation.
 
@@ -10,7 +51,6 @@ Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-nois
 ### Prepare and Booting ISO
 
 Boot Arch Linux using a prepared USB stick. [Rufus](https://rufus.ie/en/) can be used on windows, [Etcher](https://www.balena.io/etcher/) can be used on Windows or Linux.
-***
 
 ### Networking
 
