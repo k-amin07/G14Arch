@@ -1,0 +1,23 @@
+swipe:
+  3:
+    left:
+      command: 'xdotool key ctrl+super+Right' # Workspace right
+    right:
+      command: 'xdotool key ctrl+super+Left' # Workspace Left
+    up:
+      command: 'xdotool key ctrl+F8' # Parachute
+    down:
+xdotool      command: 'xdotool key meta+d' # Show Desktop
+pinch:
+  2:
+    in:
+      command: 'xdotool keydown ctrl click 4 keyup ctrl' # Zoom in
+    out:
+      command: 'xdotool keydown ctrl click 5 keyup ctrl' # Zoom out
+
+plugin: 
+  inputs:
+    libinput_command_input: # options for lib/plugin/inputs/libinput_command_input
+      enable-tap: true # click to tap
+      enable-dwt: true # disable tap while typing
+      show-keycodes: true # https://github.com/iberianpig/fusuma-plugin-keypress#add-show-keycode-option
