@@ -1,18 +1,16 @@
 # Arch Linux on Asus ROG Zephyrus G14 (G401II)
-My own notes installing Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on my Asus ROG Zephyrus G14
+Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on Asus ROG Zephyrus G14. Credits to [Unim8rix](https://github.com/Unim8trix/G14Arch), this guide is a fork of their guide with some variation.
 
-![desk](desk_v2.png)
+![image](https://user-images.githubusercontent.com/28199865/134336064-1a3bcf91-46d0-434e-9118-78345193c9d5.png)
 
-[TOC]
 
 
 ## Basic Install
 
 ### Prepare and Booting ISO
 
-Boot into BIOS and change your Harwareclock to UTC. Now booting Arch Linux, using a prepared Usbstick
-
-Change keyboard layout with  `loadkeys de-latin1-nodeadkeys`
+Boot Arch Linux using a prepared USB stick. [Rufus](https://rufus.ie/en/) can be used on windows, [Etcher](https://www.balena.io/etcher/) can be used on Windows or Linux.
+***
 
 ### Networking
 
@@ -37,6 +35,7 @@ Update System clock with `timedatectl set-ntp true`
 Format the EFI Partition
 
 `mkfs.vfat -F 32 -n EFI /dev/nvme0n1p1` 
+
 
 ### Create encrypted filesystem 
 
@@ -104,32 +103,27 @@ Add swapfile
 `echo "/swap/swapfile none swap defaults 0 0" >> /mnt/etc/fstab `
 
 ### Chroot into the new system and change language settings
-
+You can use a hostname of your choice, I have gone with zephyrus-g14.
 ```
 arch-chroot /mnt
-echo myhostname > /etc/hostname
-echo LANG=de_DE.UTF-8 > /etc/locale.conf
-echo LANGUAGE=de_DE >> /etc/locale.conf
-echo KEYMAP=de-latin1-nodeadkeys > /etc/vconsole.conf
-echo FONT=lat9w-16 >> /etc/vconsole.conf
-ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+echo zephyrus-g14 > /etc/hostname
+echo LANG=en_US.UTF-8 > /etc/locale.conf
+echo LANGUAGE=en_US >> /etc/locale.conf
+ln -sf /usr/share/zoneinfo/Asia/Karachi /etc/localtime
 hwclock --systohc
 ```
 
-Modify `nano /etc/hosts` with these entries. For static IPs, remove 127.0.1.1
+Modify `nano /etc/hosts` with these entries. For static IPs, remove 127.0.1.1. Replace zephyrus-g14 with your hostname.
 
 ```
 127.0.0.1		localhost
 ::1				localhost
-127.0.1.1		myhostname.localdomain	myhostname
+127.0.1.1		zephyrus-g14.localdomain	zephyrus-g14
 ```
 
-`nano /etc/locale.gen` to uncomment the following lines
+`nano /etc/locale.gen` to uncomment the following line
 
 ```
-de_DE.UTF-8 UTF-8
-de_DE ISO-8859-1
-de_DE@euro ISO-8859-15
 en_US.UTF-8
 ```
 Execute `locale-gen` to create the locales now
@@ -221,79 +215,26 @@ sudo pacman -Sy acpid dbus
 sudo systemctl enable acpid
 ```
 
-## Setup automatic Snapshots for Pacman
-
-The goal is to have automatic snapshots each time i made changes with pacman. The hook creates a snapshot
-to ".snapshots\STABLE". So if something goes wrong i can boot from this snapshot and rollback my system.
-
-
-### Create the STABLE snapshot and modify Bootloader
-
-First i create the snapshot and changes by hand to test if anythink is working. After that it will be done automaticly by our hook and script.
-
-```
-sudo -i
-btrfs sub snap / /.snapshots/STABLE
-cp /boot/vmlinuz-linux /boot/vmlinuz-linux-stable
-cp /boot/amd-ucode.img /boot/amd-ucode-stable.img
-cp /boot/initramfs-linux.img /boot/initramfs-linux-stable.img
-cp /boot/loader/entries/arch.conf /boot/loader/entries/stable.conf
-```
-
-Edit `/boot/loader/entries/stable.conf` to boot from STABLE snapshot
-
-```
-title   Arch Linux Stable  
-linux   /vmlinuz-linux-stable
-initrd  /amd-ucode-stable.img
-initrd  /initramfs-linux-stable.img
-options ... rootflags=subvol=@snapshots/STABLE rw
-```
-
-Now edit the `/.snapshots/STABLE/etc/fstab` to change the root to the new snapshot/STABLE
-
-ˋˋˋ
-...
-LABEL=ROOTFS  /  btrfs  rw,noatime,.....subvol=@snapshots/STABLE
-...
-ˋˋˋ 
-
-reboot and test if you can boot from the stable snapshot.
-
-### Script for auto-snapshots
-
-Copy the script from my Repo to
-
-`/usr/bin/autosnap` and make it executable with `chmod +x /usr/bin/autosnap`
-
-### Hook for pacman
-
-Copy the script from my Repo to
-
-`/etc/pacman.d/hooks/00-autosnap.hook`
-
-Now each time pacman executes, it launches the `autosnap`script which takes a snapshot from the current system.
-
+## Setup Automatic Snapshots for pacman:
+To setup automatic snapshots everytime system updates, follow the section from Unim8rix's [guide](https://github.com/Unim8trix/G14Arch)
 
 
 ## Install Desktop Environment
 
-### Get X.Org and Xcfe4
+### Get X.Org and KDE Plasma
 
-Install xorg and xfce4 packages
-
-```
-sudo pacman -Sy xorg xfce4 xfce4-goodies xf86-input-synaptics gvfs xdg-user-dirs ttf-dejavu pulseaudio network-manager-applet
-
-sudo localectl set-x11-keymap de pc105 deadgraveacute
-xdg-user-dirs-update
-```
-
-LightDM Loginmanager
+Install xorg and kde packages
 
 ```
-sudo pacman -S lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
-sudo systemctl enable lightdm
+pacman -S xorg 
+sudo pacman -Sy xorg plasma kde-applications pulseaudio
+```
+
+SDDM Loginmanager
+
+```
+sudo pacman -S sddm
+sudo systemctl enable sddm
 ```
 
 Reboot and login to your new Desktop.
@@ -343,25 +284,15 @@ Add some kernel-parameters to make boot smooth. Edit `/boot/loader/entries/arch.
 ...rootflags=subvol=@ quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_priority=3 vt.global_cursor_default=0 rw
 ```
 
-Optional: replace LightDM with the plymouth variant
 
+For Plymouth Theming and Options, check [Plymouth on Arch Wiki](https://wiki.archlinux.org/title/plymouth). Issue the following command to set ROG logo as the plymouth theme.
 ```
-sudo systemctl disable lightdm
-sudo systemctl enable lightdm-plymouth
+sudo plymouth-set-default-theme -R bgrt
 ```
 
-For Plymouth Theming and Options, check [Plymouth on Arch Wiki](https://wiki.archlinux.org/title/plymouth) 
+For KDE Theming you could check this nice [Youtube Video from Linux Scoop](https://www.youtube.com/watch?v=2GYT7BK41zk)
 
-For XFCE4 Theming you could check this nice [Youtube Video from Linux Scoop](https://www.youtube.com/watch?v=X3siZNJN3ec)
-
-
-## Nvidia, No-Noise-Fan Curves
-
-### Install latest nvidia driver
-
-```
-sudo pacman -Sy nvidia acpi_call
-```
+## Useful Customizations:
 
 ### Install asusctl tool from [Luke Jones](https://asus-linux.org/)
 
@@ -373,7 +304,7 @@ sudo pacman -Sy asusctl
 ```
 Optional: Copy my asusd profile to `/etc/asusd/asusd.conf` or make your own profiles and Fan-Curves
 
-Activate DBUS Messaging for the new asus deamon
+Activate DBUS Messaging for the new asus deamon to get asus notifications upon changing fan profile etc.
 
 ```
 systemctl --user enable asus-notify
@@ -382,5 +313,153 @@ systemctl --user start asus-notify
 
 For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS_GA401I#ASUSCtl) or the [Repository from Luke](https://gitlab.com/asus-linux/asusctl)
 
+### Battery limit:
+Set battery charge limit to 85% in asusd.conf to prevent battery wear. Charging to 100% quickly drops battery health.
 
-I deactivate CPU Boost in Normal and Silent Profile, my G14 now totally cool and silent in normal Office - and Dev-Work with multiple virtual machines running.
+### Installing a custom kernel:
+I use the linux-g14 kernel, which is available in the repo we used for asusctl tool. Install the kernel using
+```
+sudo pacman -S linux-g14 linux-g14-headers
+```
+Edit `/boot/loader/loader.conf` and replace the contents with the following. 
+```
+default arch-g14.conf
+timeout 3
+editor 0
+```
+Run `sudo nano /boot/loader/entries/arch-g14.conf` and add the following lines:
+```
+title   Arch Linux (g14)
+linux   /vmlinuz-linux-g14
+initrd  /amd-ucode.img
+initrd  /initramfs-linux-g14.img
+options cryptdevice=UUID=04ea2e96-fd5d-446c-bb6f-c83c0cc44158:luks root=/dev/mapper/luks rootflags=subvol=@ quiet splash loglevel=3 rd.systemd.show_status=auto
+```
+and finally, run 
+```
+sudo mkinitcpio -p linux-g14
+```
+### ROG Key Map
+Go to KDE Settings->Shortcuts->Custom Shortcuts. Click Edit->New->Global Shortcut->Command/URL. Name it `NvidiaSettings`. Set trigger to `ROG Key` and set action to `nvidia-settings`  
+
+### Change Fan Profile:
+Go to KDE Settings->Shortcuts->Custom Shortcuts. Click Edit->New->Global Shortcut->Command/URL. Name it  `ChangeFanProfile`, set trigger to `fn + f5` and action to `asusctl profile -n`
+
+### Mic Mute Key:
+Run `usb-devices` and look for the device that says `Product=N-KEY Device`. Note the vendor id. For my zephyrus it is `0b05`.  Run 
+```
+sudo find /sys -name modalias | xargs grep -i 0b05
+```
+
+Find the line that goes like:
+```
+.../input/input18/modalias:input:b0003v0B05p1866e0110-e0...
+```
+Copy the part after `input:`, before the first `-e`. In my case, it is `b0003v0B05p1866e0110`.  Create a file named `/etc/udev/hwdb.d/90-nkey.hwdb` and add
+```
+/etc/udev/hwdb.d/90-nkey.hwdb
+evdev:input:b0003v0B05p1866*
+ KEYBOARD_KEY_ff31007c=f20 # x11 mic-mute, space in start is important in this line
+```
+	After that, update `hwdb`.
+```
+sudo systemd-hwdb update
+sudo udevadm trigger
+```
+
+### Powertop
+Install powertop and calibrate first by running:
+```
+sudo powertop -c
+```
+Running `powertop --autotune` can improve battery life. Add the following to /etc/rc.local
+```
+#!/bin/sh -e
+sudo powertop --auto-tune
+exit 0
+```
+
+Then add an rc-local.service to systemd using:
+```
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description=/etc/rc.local Compatibility
+ConditionPathExists=/etc/rc.local
+
+[Service]
+Type=forking
+ExecStart=/etc/rc.local start
+TimeoutSec=0
+StandardOutput=tty
+RemainAfterExit=yes
+SysVStartPriority=99
+```
+
+## Nvidia
+Install `nvidia` package from official repos. Double check to see if linux-headers and/or linux-g14-headers (depending on the kernel) are installed to avoid blackscreen.  Do not run `nvidia-xconfig` on Arch as it results in black screen. Install the following packages:
+```
+sudo pacman -S nvidia-dkms nvidia-settings nvidia-prime acpi_call
+```
+## Optimus Manager:
+Install optimus-manager and optimus-manager-qt. After rebooting, it should work fine. 
+
+- **Type C external display:**
+HDMI works out of the box, displays can be connected to type C port but require switching to dedicated graphics. Can be done either through asusctl or Optimus Manager QT.
+	
+- **Optimus Manager configuration**
+In optimus manager qt, go to optimus tab, and select ACPI call switching method and set PCI reset to No. Enable PCI remove. Startup mode is integrated. In Nvidia, set dynamic power management to fine. Modeset, Pat and overclocking options.
+
+- **Sleep/Shutdown issues**
+System was only going to sleep once and after that got stuck on shutdown and sleep. This happened because I had set switching method to bbswitch in optimus manager. Swithced to acpi_call to fix.
+
+## Miscellaneous
+### Fetch on Terminal Start
+After installing and enabling zsh and oh-my-zsh with powerlevel10k, create file `~/.zshenv` and do the following:
+- Install fastfetch-git from pamac.
+- Add `fastfetch --load-config paleofetch` in `~/.zshenv`
+### Key delay
+Reduce key input delay to 250 ms for a better keyboard experience.
+
+## KDE Tweaks:
+### Open In First Virtual Desktop:
+Add Window Rule, name it `Open in first VD`. Set the following rules
+
+- Window Class: Unimportant
+- Match whole window class: No
+- Window Types: Normal window (deselect all others)
+- Size: Apply Initially, 1280x720
+- Virtual Desktop: Apply Initially, Desktop 1.
+- Ignore Requested Geometry: Force, Yes.
+- Window behavior: Focus Stealing prevention Low -> None.
+
+To make brave launch in 1280x720, do the following:
+- Edit `/usr/share/applications/brave-browser.desktop`
+- line 111: change `Exec=brave %U` to `Exec=brave %U --window-size="1280,720"`
+- Repeat for line 111 and 223
+
+### Touchpad Gestures:
+ Use [fusuma](https://github.com/iberianpig/fusuma) to get touchpad gestures. Create `/home/slim/.local/share/scripts/fusuma.sh` and add
+ ```
+ #!/bin/bash
+ fusuma -d #for running in daemon mode
+```
+Add this scrpit to autostart in KDE settings. For macOS like gestures use [this config](https://github.com/iberianpig/fusuma/wiki/KDE-to-mimic-MacOS.). 4 finger gestures are not working. My config is in the repo.
+
+### Yet Another Magic Lamp:
+
+A better [magic lamp](https://github.com/zzag/kwin-effects-yet-another-magic-lamp) effect. In latest plasma versions, exclude "disable unsupported effects" next to the search bar in settings for the effect to appear.
+
+### Maximize to new desktop ([git](https://github.com/Aetf/kwin-maxmize-to-new-desktop#window-class-blacklist-in-configuration-is-blank)): 
+In Kwin scripts, install "kwin-maximize-to-new-desktop" and run:
+```
+mkdir -p ~/.local/share/kservices5
+ln -s ~/.local/share/kwin/scripts/max2NewVirtualDesktop/metadata.desktop ~/.local/share/kservices5/max2NewVirtualDesktop.desktop
+```
+Then install kdesignerplugin through `pacman -S kdesignerplugin`. Logout and login again after configuration changes. My config:
+```
+Trigger: Maximize only
+Position: Next to current
+```
+
