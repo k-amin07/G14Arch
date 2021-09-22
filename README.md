@@ -21,7 +21,7 @@
     + [Oh-My-ZSH](#oh-my-zsh)
     + [Setup Plymouth for nice Password Prompt during Boot](#setup-plymouth-for-nice-password-prompt-during-boot)
   * [Useful Customizations:](#useful-customizations-)
-    + [Install asusctl tool from [Luke Jones](https://asus-linux.org/)](#install-asusctl-tool-from--luke-jones--https---asus-linuxorg--)
+    + [Install asusctl tool](#install-asusctl-tool-from--luke-jones--https---asus-linuxorg--)
     + [Battery limit:](#battery-limit-)
     + [Installing a custom kernel:](#installing-a-custom-kernel-)
     + [ROG Key Map](#rog-key-map)
@@ -37,7 +37,7 @@
     + [Open In First Virtual Desktop:](#open-in-first-virtual-desktop-)
     + [Touchpad Gestures:](#touchpad-gestures-)
     + [Yet Another Magic Lamp:](#yet-another-magic-lamp-)
-    + [Maximize to new desktop ([git](https://github.com/Aetf/kwin-maxmize-to-new-desktop#window-class-blacklist-in-configuration-is-blank)):](#maximize-to-new-desktop---git--https---githubcom-aetf-kwin-maxmize-to-new-desktop-window-class-blacklist-in-configuration-is-blank---)
+    + [Maximize to new desktop](#maximize-to-new-desktop---git--https---githubcom-aetf-kwin-maxmize-to-new-desktop-window-class-blacklist-in-configuration-is-blank---)
 
 # Arch Linux on Asus ROG Zephyrus G14 (G401II)
 Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on Asus ROG Zephyrus G14. Credits to [Unim8rix](https://github.com/Unim8trix/G14Arch), this guide is a fork of their guide with some variation.
