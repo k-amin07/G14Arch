@@ -1,7 +1,7 @@
 # Table of contents
 
 - [Arch Linux on Asus ROG Zephyrus G14 (G401II)](#arch-linux-on-asus-rog-zephyrus-g14-g401ii)
-- [Arch Install](#arch-install)
+- [Basic Install](#arch-install)
   - [Prepare and Booting ISO](#prepare-and-booting-iso)
   - [Networking](#networking)
   - [Format Disk](#format-disk)
@@ -46,7 +46,7 @@ Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-nois
 ![Screenshot_20210922_175229](https://user-images.githubusercontent.com/28199865/134347373-a60623ad-f66a-4f8e-ab12-7a2e0b005313.png)
 
 
-# Arch Install
+# Basic Install
 
 ## Prepare and Booting ISO
 
