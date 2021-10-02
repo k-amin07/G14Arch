@@ -20,22 +20,22 @@
   - [Setup Automatic Snapshots for pacman:](#setup-automatic-snapshots-for-pacman)
 - [Install Desktop Environment](#install-desktop-environment)
   - [Get X.Org and KDE Plasma](#get-xorg-and-kde-plasma)
-  - [Remove extra KDE Packages:](#remove-extra-kde-packages)
+  - [Remove extra KDE Packages](#remove-extra-kde-packages)
   - [Oh-My-ZSH](#oh-my-zsh)
   - [Setup Plymouth for nice Password Prompt during Boot](#setup-plymouth-for-nice-password-prompt-during-boot)
 - [Nvidia](#nvidia)
-  - [Optimus Manager:](#optimus-manager)
+  - [Optimus Manager](#optimus-manager)
 - [Useful Customizations](#useful-customizations)
   - [Install asusctl tool](#install-asusctl-tool)
   - [Battery limit](#battery-limit)
   - [ROG Key Map](#rog-key-map)
   - [Change Fan Profile](#change-fan-profile)
   - [Mic Mute Key](#mic-mute-key)
-- [KDE Tweaks:](#kde-tweaks)
-  - [Window Size:](#window-size)
+- [KDE Tweaks](#kde-tweaks)
+  - [Window Size](#window-size)
   - [Touchpad Gestures](#touchpad-gestures)
   - [Yet Another Magic Lamp](#yet-another-magic-lamp)
-  - [Maximize to new desktop:](#maximize-to-new-desktop)
+  - [Maximize to new desktop](#maximize-to-new-desktop)
 - [Miscellaneous](#miscellaneous)
   - [Fetch on Terminal Start](#fetch-on-terminal-start)
   - [Key delay](#key-delay)
@@ -279,7 +279,7 @@ sudo systemctl enable sddm
 
 Reboot and login to your new Desktop.
 
-## Remove extra KDE Packages:
+## Remove extra KDE Packages
 `kde-applications` installs a bunch of packages that I do not need so I removed them. First remove the following groups of applications.
 ```
 sudo pacman -Rns kdepim kde-games kde-education kde-multimedia
@@ -348,10 +348,10 @@ Install `nvidia` package from official repos. Double check to see if linux-heade
 ```
 sudo pacman -S nvidia-dkms nvidia-settings nvidia-prime acpi_call
 ```
-## Optimus Manager:
+## Optimus Manager
 Install optimus-manager and optimus-manager-qt. After rebooting, it should work fine. 
 
-- **Type C external display:**
+- **Type C external display**
 HDMI works out of the box, displays can be connected to type C port but require switching to dedicated graphics. Can be done either through asusctl or Optimus Manager QT.
 	
 - **Optimus Manager configuration**
@@ -413,8 +413,8 @@ sudo systemd-hwdb update
 sudo udevadm trigger
 ```
 
-# KDE Tweaks:
-## Window Size:
+# KDE Tweaks
+## Window Size
 I prefer the apps to open in windowed mode, in the center of the screen with 1280 * 720 resolution. To do this, add Window Rule, name it `Window Size`. Set the following rules
 
 - Window Class: Unimportant
@@ -440,7 +440,7 @@ Add this scrpit to autostart in KDE settings. For macOS like gestures use [this 
 
 A better [magic lamp](https://github.com/zzag/kwin-effects-yet-another-magic-lamp) effect. In latest plasma versions, exclude "disable unsupported effects" next to the search bar in settings for the effect to appear.
 
-## Maximize to new desktop: 
+## Maximize to new desktop
 In Kwin scripts, install "kwin-maximize-to-new-desktop" and run:
 ```
 mkdir -p ~/.local/share/kservices5
