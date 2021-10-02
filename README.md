@@ -1,43 +1,44 @@
-# Table of Content
-  * [Basic Install](#basic-install)
-    + [Prepare and Booting ISO](#prepare-and-booting-iso)
-    + [Networking](#networking)
-    + [Format Disk](#format-disk)
-    + [Create encrypted filesystem](#create-encrypted-filesystem)
-    + [Create and Mount btrfs Subvolumes](#create-and-mount-btrfs-subvolumes)
-    + [Create a btrfs swapfile and remount subvols](#create-a-btrfs-swapfile-and-remount-subvols)
-    + [Install the system using pacstrap](#install-the-system-using-pacstrap)
-    + [Chroot into the new system and change language settings](#chroot-into-the-new-system-and-change-language-settings)
-    + [Add btrfs and encrypt to Initramfs](#add-btrfs-and-encrypt-to-initramfs)
-    + [Install Systemd Bootloader](#install-systemd-bootloader)
-    + [Set nvidia-nouveau onto blacklist](#set-nvidia-nouveau-onto-blacklist)
-    + [Leave Chroot and Reboot](#leave-chroot-and-reboot)
-  * [Finetuning after first Reboot](#finetuning-after-first-reboot)
-    + [Enable Networkmanager](#enable-networkmanager)
-    + [Create a new user](#create-a-new-user)
-  * [Setup Automatic Snapshots for pacman:](#setup-automatic-snapshots-for-pacman-)
-  * [Install Desktop Environment](#install-desktop-environment)
-    + [Get X.Org and KDE Plasma](#get-xorg-and-kde-plasma)
-    + [Oh-My-ZSH](#oh-my-zsh)
-    + [Setup Plymouth for nice Password Prompt during Boot](#setup-plymouth-for-nice-password-prompt-during-boot)
-  * [Useful Customizations:](#useful-customizations-)
-    + [Install asusctl tool](#install-asusctl-tool-from--luke-jones--https---asus-linuxorg--)
-    + [Battery limit:](#battery-limit-)
-    + [Installing a custom kernel:](#installing-a-custom-kernel-)
-    + [ROG Key Map](#rog-key-map)
-    + [Change Fan Profile:](#change-fan-profile-)
-    + [Mic Mute Key:](#mic-mute-key-)
-    + [Powertop](#powertop)
-  * [Nvidia](#nvidia)
-  * [Optimus Manager:](#optimus-manager-)
-  * [Miscellaneous](#miscellaneous)
-    + [Fetch on Terminal Start](#fetch-on-terminal-start)
-    + [Key delay](#key-delay)
-  * [KDE Tweaks:](#kde-tweaks-)
-    + [Open In First Virtual Desktop:](#open-in-first-virtual-desktop-)
-    + [Touchpad Gestures:](#touchpad-gestures-)
-    + [Yet Another Magic Lamp:](#yet-another-magic-lamp-)
-    + [Maximize to new desktop](#maximize-to-new-desktop---git--https---githubcom-aetf-kwin-maxmize-to-new-desktop-window-class-blacklist-in-configuration-is-blank---)
+# Table of contents
+
+- [Arch Linux on Asus ROG Zephyrus G14 (G401II)](#arch-linux-on-asus-rog-zephyrus-g14-g401ii)
+- [Arch Install](#arch-install)
+  - [Prepare and Booting ISO](#prepare-and-booting-iso)
+  - [Networking](#networking)
+  - [Format Disk](#format-disk)
+  - [Create encrypted filesystem](#create-encrypted-filesystem)
+  - [Create and Mount btrfs Subvolumes](#create-and-mount-btrfs-subvolumes)
+  - [Create a btrfs swapfile and remount subvols](#create-a-btrfs-swapfile-and-remount-subvols)
+  - [Install the system using pacstrap](#install-the-system-using-pacstrap)
+  - [Chroot into the new system and change language settings](#chroot-into-the-new-system-and-change-language-settings)
+  - [Add btrfs and encrypt to Initramfs](#add-btrfs-and-encrypt-to-initramfs)
+  - [Install Systemd Bootloader](#install-systemd-bootloader)
+  - [Set nvidia-nouveau onto blacklist](#set-nvidia-nouveau-onto-blacklist)
+  - [Leave Chroot and Reboot](#leave-chroot-and-reboot)
+- [Finetuning after first Reboot](#finetuning-after-first-reboot)
+  - [Enable Networkmanager](#enable-networkmanager)
+  - [Create a new user](#create-a-new-user)
+  - [Setup Automatic Snapshots for pacman:](#setup-automatic-snapshots-for-pacman)
+- [Install Desktop Environment](#install-desktop-environment)
+  - [Get X.Org and KDE Plasma](#get-xorg-and-kde-plasma)
+  - [Remove extra KDE Packages:](#remove-extra-kde-packages)
+  - [Oh-My-ZSH](#oh-my-zsh)
+  - [Setup Plymouth for nice Password Prompt during Boot](#setup-plymouth-for-nice-password-prompt-during-boot)
+- [Nvidia](#nvidia)
+  - [Optimus Manager:](#optimus-manager)
+- [Useful Customizations](#useful-customizations)
+  - [Install asusctl tool](#install-asusctl-tool)
+  - [Battery limit](#battery-limit)
+  - [ROG Key Map](#rog-key-map)
+  - [Change Fan Profile](#change-fan-profile)
+  - [Mic Mute Key](#mic-mute-key)
+- [KDE Tweaks:](#kde-tweaks)
+  - [Window Size:](#window-size)
+  - [Touchpad Gestures](#touchpad-gestures)
+  - [Yet Another Magic Lamp](#yet-another-magic-lamp)
+  - [Maximize to new desktop:](#maximize-to-new-desktop)
+- [Miscellaneous](#miscellaneous)
+  - [Fetch on Terminal Start](#fetch-on-terminal-start)
+  - [Key delay](#key-delay)
 
 # Arch Linux on Asus ROG Zephyrus G14 (G401II)
 Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on Asus ROG Zephyrus G14. Credits to [Unim8rix](https://github.com/Unim8trix/G14Arch), this guide is a fork of their guide with some variation.
@@ -45,13 +46,13 @@ Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-nois
 ![Screenshot_20210922_175229](https://user-images.githubusercontent.com/28199865/134347373-a60623ad-f66a-4f8e-ab12-7a2e0b005313.png)
 
 
-## Basic Install
+# Arch Install
 
-### Prepare and Booting ISO
+## Prepare and Booting ISO
 
 Boot Arch Linux using a prepared USB stick. [Rufus](https://rufus.ie/en/) can be used on windows, [Etcher](https://www.balena.io/etcher/) can be used on Windows or Linux.
 
-### Networking
+## Networking
 
 For Network i use wireless, if you need wired please check the [Arch WiKi](https://wiki.archlinux.org/index.php/Network_configuration). 
 
@@ -60,7 +61,7 @@ Type `exit` to leave.
 
 Update System clock with `timedatectl set-ntp true`
 
-### Format Disk
+## Format Disk
 
 * My Disk is `nvme0n1`, check with `lsblk` 
 * Format Disk using `gdisk /dev/nvme0n1` with this simple layout:
@@ -76,14 +77,14 @@ Format the EFI Partition
 `mkfs.vfat -F 32 -n EFI /dev/nvme0n1p1` 
 
 
-### Create encrypted filesystem 
+## Create encrypted filesystem 
 
 ```
 cryptsetup luksFormat /dev/nvme0n1p2  
 cryptsetup open /dev/nvme0n1p2 luks
 ```
 
-### Create and Mount btrfs Subvolumes
+## Create and Mount btrfs Subvolumes
 
 `mkfs.btrfs -f -L ROOTFS /dev/mapper/luks` btrfs filesystem for root partition
 
@@ -96,7 +97,7 @@ Mount Partitions und create Subvol for btrfs. I dont want home, etc in my snapsh
 * `btrfs sub create /mnt/@snapshots`
 * `btrfs sub create /mnt/@swap`
 
-### Create a btrfs swapfile and remount subvols
+## Create a btrfs swapfile and remount subvols
 
 ```
 truncate -s 0 /mnt/@swap/swapfile
@@ -129,7 +130,7 @@ mount -o noatime,compress=zstd,space_cache,commit=120,subvolid=5 /dev/mapper/luk
 
 Check mountmoints with `df -Th` 
 
-### Install the system using pacstrap
+## Install the system using pacstrap
 
 ```
 pacstrap /mnt base base-devel linux linux-firmware btrfs-progs nano networkmanager amd-ucode
@@ -141,7 +142,7 @@ After this, generate the filesystem table using
 Add swapfile 
 `echo "/swap/swapfile none swap defaults 0 0" >> /mnt/etc/fstab `
 
-### Chroot into the new system and change language settings
+## Chroot into the new system and change language settings
 You can use a hostname of your choice, I have gone with zephyrus-g14.
 ```
 arch-chroot /mnt
@@ -170,7 +171,7 @@ Execute `locale-gen` to create the locales now
 Add a password for root using `passwd root`
 
 
-### Add btrfs and encrypt to Initramfs
+## Add btrfs and encrypt to Initramfs
 
 `nano /etc/mkinitcpio.conf` and add `encrypt btrfs` to hooks between block/filesystems
 
@@ -180,11 +181,11 @@ Also include `amdgpu` in the MODULES section
 
 create Initramfs using `mkinitcpio -p linux`
 
-### Install Systemd Bootloader
+## Install Systemd Bootloader
 
 `bootctl --path=/boot install` installs bootloader
 
-`nano /boot/loader/loader.conf` delete anything and add these few lines and save
+`nano /boot/loader/loader.conf` delete everything and add these few lines and save
 
 ```
 default	arch.conf
@@ -204,7 +205,7 @@ initrd	/initramfs-linux.img
 copy boot-options with
 ` echo "options	cryptdevice=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2):luks root=/dev/mapper/luks rootflags=subvol=@ rw" >> /boot/loader/entries/arch.conf` 
 
-### Set nvidia-nouveau onto blacklist 
+## Set nvidia-nouveau onto blacklist 
 
 using `nano /etc/modprobe.d/blacklist-nvidia-nouveau.conf` with these lines
 
@@ -213,7 +214,7 @@ using `nano /etc/modprobe.d/blacklist-nvidia-nouveau.conf` with these lines
 	options nouveau modeset=0
 ```
 
-### Leave Chroot and Reboot
+## Leave Chroot and Reboot
 
 Type `exit` to exit chroot
 
@@ -221,9 +222,9 @@ Type `exit` to exit chroot
 
 Now its time to `reboot` into the new system!
 
-## Finetuning after first Reboot
+# Finetuning after first Reboot
 
-### Enable Networkmanager
+## Enable Networkmanager
 
 Configure WiFi Connection.
 
@@ -233,12 +234,12 @@ systemctl start NetworkManager
 nmcli device wifi connect YOURSSID password SSIDPASSWORD
 ```
 
-### Create a new user 
+## Create a new user 
 
-First create my new local user and point it to bash
+First create my new local user and point it to zsh
 
 ```
-useradd -m -g users -G wheel,power,audio -s /bin/bash MYUSERNAME
+useradd -m -g users -G wheel,power,audio -s /usr/bin/zsh MYUSERNAME
 passwd MYUSERNAME
 ```
 
@@ -258,15 +259,15 @@ sudo systemctl enable acpid
 To setup automatic snapshots everytime system updates, follow the section from Unim8rix's [guide](https://github.com/Unim8trix/G14Arch)
 
 
-## Install Desktop Environment
+# Install Desktop Environment
 
-### Get X.Org and KDE Plasma
+## Get X.Org and KDE Plasma
 
 Install xorg and kde packages
 
 ```
 pacman -S xorg 
-sudo pacman -Sy xorg plasma kde-applications pulseaudio
+sudo pacman -Sy plasma kde-applications pulseaudio
 ```
 
 SDDM Loginmanager
@@ -278,8 +279,19 @@ sudo systemctl enable sddm
 
 Reboot and login to your new Desktop.
 
+## Remove extra KDE Packages:
+`kde-applications` installs a bunch of packages that I do not need so I removed them. First remove the following groups of applications.
+```
+sudo pacman -Rns kdepim kde-games kde-education kde-multimedia
+```
+Then, remove some apps from other groups too.
+```
+sudo pacman -R kwrite kcharselect yakuake kdebugsettings kfloppy filelight kteatime konqueror konversation kopete
+```
+To see what various applications do, check out the [kde-applications](https://archlinux.org/groups/x86_64/kde-applications/) group on Arch website.
 
-### Oh-My-ZSH
+
+## Oh-My-ZSH
 
 I like to use oh-my-zsh with Powerlevel10K theme
 
@@ -299,7 +311,7 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$
 
 Set `ZSH_THEME="powerlevel10k/powerlevel10k"` in `~/.zshrc`
 
-### Setup Plymouth for nice Password Prompt during Boot
+## Setup Plymouth for nice Password Prompt during Boot
 
 Plymouth is in [AUR](https://aur.archlinux.org) , just clone the Repo and make the Package (i create a subfolder AUR within my homefolder)
 
@@ -331,11 +343,29 @@ sudo plymouth-set-default-theme -R bgrt
 
 For KDE Theming you could check this nice [Youtube Video from Linux Scoop](https://www.youtube.com/watch?v=2GYT7BK41zk)
 
-## Useful Customizations:
+# Nvidia
+Install `nvidia` package from official repos. Double check to see if linux-headers are installed to avoid blackscreen on reboot.  Do NOT run `nvidia-xconfig` on Arch as it results in black screen. Install the following packages:
+```
+sudo pacman -S nvidia-dkms nvidia-settings nvidia-prime acpi_call
+```
+## Optimus Manager:
+Install optimus-manager and optimus-manager-qt. After rebooting, it should work fine. 
 
-### Install asusctl tool from [Luke Jones](https://asus-linux.org/)
+- **Type C external display:**
+HDMI works out of the box, displays can be connected to type C port but require switching to dedicated graphics. Can be done either through asusctl or Optimus Manager QT.
+	
+- **Optimus Manager configuration**
+In optimus manager qt, go to optimus tab, and select ACPI call switching method and set PCI reset to No. Enable PCI remove. Startup mode is integrated. In Nvidia, set dynamic power management to fine. Modeset, Pat and overclocking options.
 
-Add his Repo to pacman.conf
+- **Sleep/Shutdown issues**
+System was only going to sleep once and after that got stuck on shutdown and sleep. This happened because I had set switching method to bbswitch in optimus manager. Swithced to acpi_call to fix.
+
+
+# Useful Customizations
+
+## Install asusctl tool
+
+Add [Luke Jones](https://asus-linux.org/)'s Repo to pacman.conf
 ```
 sudo bash -c "echo -e '\r[g14]\nSigLevel = DatabaseNever Optional TrustAll\nServer = https://arch.asus-linux.org\n' >> /etc/pacman.conf"
 
@@ -352,39 +382,16 @@ systemctl --user start asus-notify
 
 For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS_GA401I#ASUSCtl) or the [Repository from Luke](https://gitlab.com/asus-linux/asusctl)
 
-### Battery limit:
+## Battery limit
 Set battery charge limit to 85% in asusd.conf to prevent battery wear. Charging to 100% quickly drops battery health.
 
-### Installing a custom kernel:
-I use the linux-g14 kernel, which is available in the repo we used for asusctl tool. Install the kernel using
-```
-sudo pacman -S linux-g14 linux-g14-headers
-```
-Edit `/boot/loader/loader.conf` and replace the contents with the following. 
-```
-default arch-g14.conf
-timeout 3
-editor 0
-```
-Run `sudo nano /boot/loader/entries/arch-g14.conf` and add the following lines:
-```
-title   Arch Linux (g14)
-linux   /vmlinuz-linux-g14
-initrd  /amd-ucode.img
-initrd  /initramfs-linux-g14.img
-options cryptdevice=UUID=04ea2e96-fd5d-446c-bb6f-c83c0cc44158:luks root=/dev/mapper/luks rootflags=subvol=@ quiet splash loglevel=3 rd.systemd.show_status=auto
-```
-and finally, run 
-```
-sudo mkinitcpio -p linux-g14
-```
-### ROG Key Map
+## ROG Key Map
 Go to KDE Settings->Shortcuts->Custom Shortcuts. Click Edit->New->Global Shortcut->Command/URL. Name it `NvidiaSettings`. Set trigger to `ROG Key` and set action to `nvidia-settings`  
 
-### Change Fan Profile:
+## Change Fan Profile
 Go to KDE Settings->Shortcuts->Custom Shortcuts. Click Edit->New->Global Shortcut->Command/URL. Name it  `ChangeFanProfile`, set trigger to `fn + f5` and action to `asusctl profile -n`
 
-### Mic Mute Key:
+## Mic Mute Key
 Run `usb-devices` and look for the device that says `Product=N-KEY Device`. Note the vendor id. For my zephyrus it is `0b05`.  Run 
 ```
 sudo find /sys -name modalias | xargs grep -i 0b05
@@ -400,97 +407,40 @@ Copy the part after `input:`, before the first `-e`. In my case, it is `b0003v0B
 evdev:input:b0003v0B05p1866*
  KEYBOARD_KEY_ff31007c=f20 # x11 mic-mute, space in start is important in this line
 ```
-	After that, update `hwdb`.
+After that, update `hwdb`.
 ```
 sudo systemd-hwdb update
 sudo udevadm trigger
 ```
 
-### Powertop
-Install powertop and calibrate first by running:
-```
-sudo powertop -c
-```
-Running `powertop --autotune` can improve battery life. Add the following to /etc/rc.local
-```
-#!/bin/sh -e
-sudo powertop --auto-tune
-exit 0
-```
-
-Then add an rc-local.service to systemd using:
-```
-[Install]
-WantedBy=multi-user.target
-
-[Unit]
-Description=/etc/rc.local Compatibility
-ConditionPathExists=/etc/rc.local
-
-[Service]
-Type=forking
-ExecStart=/etc/rc.local start
-TimeoutSec=0
-StandardOutput=tty
-RemainAfterExit=yes
-SysVStartPriority=99
-```
-
-## Nvidia
-Install `nvidia` package from official repos. Double check to see if linux-headers and/or linux-g14-headers (depending on the kernel) are installed to avoid blackscreen.  Do not run `nvidia-xconfig` on Arch as it results in black screen. Install the following packages:
-```
-sudo pacman -S nvidia-dkms nvidia-settings nvidia-prime acpi_call
-```
-## Optimus Manager:
-Install optimus-manager and optimus-manager-qt. After rebooting, it should work fine. 
-
-- **Type C external display:**
-HDMI works out of the box, displays can be connected to type C port but require switching to dedicated graphics. Can be done either through asusctl or Optimus Manager QT.
-	
-- **Optimus Manager configuration**
-In optimus manager qt, go to optimus tab, and select ACPI call switching method and set PCI reset to No. Enable PCI remove. Startup mode is integrated. In Nvidia, set dynamic power management to fine. Modeset, Pat and overclocking options.
-
-- **Sleep/Shutdown issues**
-System was only going to sleep once and after that got stuck on shutdown and sleep. This happened because I had set switching method to bbswitch in optimus manager. Swithced to acpi_call to fix.
-
-## Miscellaneous
-### Fetch on Terminal Start
-After installing and enabling zsh and oh-my-zsh with powerlevel10k, create file `~/.zshenv` and do the following:
-- Install fastfetch-git from pamac.
-- Add `fastfetch --load-config paleofetch` in `~/.zshenv`
-### Key delay
-Reduce key input delay to 250 ms for a better keyboard experience.
-
-## KDE Tweaks:
-### Open In First Virtual Desktop:
-Add Window Rule, name it `Open in first VD`. Set the following rules
+# KDE Tweaks:
+## Window Size:
+I prefer the apps to open in windowed mode, in the center of the screen with 1280 * 720 resolution. To do this, add Window Rule, name it `Window Size`. Set the following rules
 
 - Window Class: Unimportant
 - Match whole window class: No
 - Window Types: Normal window (deselect all others)
 - Size: Apply Initially, 1280x720
-- Virtual Desktop: Apply Initially, Desktop 1.
 - Ignore Requested Geometry: Force, Yes.
-- Window behavior: Focus Stealing prevention Low -> None.
 
 To make brave launch in 1280x720, do the following:
 - Edit `/usr/share/applications/brave-browser.desktop`
 - line 111: change `Exec=brave %U` to `Exec=brave %U --window-size="1280,720"`
 - Repeat for line 111 and 223
 
-### Touchpad Gestures:
- Use [fusuma](https://github.com/iberianpig/fusuma) to get touchpad gestures. Create `/home/slim/.local/share/scripts/fusuma.sh` and add
+## Touchpad Gestures
+ Use [fusuma](https://github.com/iberianpig/fusuma) to get touchpad gestures. Create `~/.local/share/scripts/fusuma.sh` and add
  ```
  #!/bin/bash
  fusuma -d #for running in daemon mode
 ```
 Add this scrpit to autostart in KDE settings. For macOS like gestures use [this config](https://github.com/iberianpig/fusuma/wiki/KDE-to-mimic-MacOS.). 4 finger gestures are not working. My config is in the repo.
 
-### Yet Another Magic Lamp:
+## Yet Another Magic Lamp
 
 A better [magic lamp](https://github.com/zzag/kwin-effects-yet-another-magic-lamp) effect. In latest plasma versions, exclude "disable unsupported effects" next to the search bar in settings for the effect to appear.
 
-### Maximize to new desktop ([git](https://github.com/Aetf/kwin-maxmize-to-new-desktop#window-class-blacklist-in-configuration-is-blank)): 
+## Maximize to new desktop: 
 In Kwin scripts, install "kwin-maximize-to-new-desktop" and run:
 ```
 mkdir -p ~/.local/share/kservices5
@@ -501,4 +451,14 @@ Then install kdesignerplugin through `pacman -S kdesignerplugin`. Logout and log
 Trigger: Maximize only
 Position: Next to current
 ```
+([git](https://github.com/Aetf/kwin-maxmize-to-new-desktop#window-class-blacklist-in-configuration-is-blank))
+
+# Miscellaneous
+## Fetch on Terminal Start
+After installing and enabling zsh and oh-my-zsh with powerlevel10k, create file `~/.zshenv` and do the following:
+- Install fastfetch-git from pamac.
+- Add `fastfetch --load-config paleofetch` in `~/.zshenv`
+
+## Key delay
+Reduce key input delay to 250 ms for a better keyboard experience.
 
