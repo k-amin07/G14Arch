@@ -371,8 +371,6 @@ sudo bash -c "echo -e '\r[g14]\nSigLevel = DatabaseNever Optional TrustAll\nServ
 
 sudo pacman -Sy asusctl
 ```
-Optional: Copy my asusd profile to `/etc/asusd/asusd.conf` or make your own profiles and Fan-Curves
-
 Activate DBUS Messaging for the new asus deamon to get asus notifications upon changing fan profile etc.
 
 ```
@@ -380,10 +378,18 @@ systemctl --user enable asus-notify
 systemctl --user start asus-notify
 ```
 
-For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS_GA401I#ASUSCtl) or the [Repository from Luke](https://gitlab.com/asus-linux/asusctl)
+Run the following commands:
+```
+asusctl -c 85
+asusctl fan-curve -m Quiet -f cpu -e true
+asusctl fan-curve -m Quiet -f gpu -e true 
+asusctl fan-curve -m Performance -f cpu -e true
+asusctl fan-curve -m Performance -f gpu -e true
+asusctl fan-curve -m Balanced -f cpu -e true
+asusctl fan-curve -m Balanced -f gpu -e true
+```
 
-## Battery limit
-Set battery charge limit to 85% in asusd.conf to prevent battery wear. Charging to 100% quickly drops battery health.
+For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS_GA401I#ASUSCtl) or the [Repository from Luke](https://gitlab.com/asus-linux/asusctl)
 
 ## ROG Key Map
 Go to KDE Settings->Shortcuts->Custom Shortcuts. Click Edit->New->Global Shortcut->Command/URL. Name it `NvidiaSettings`. Set trigger to `ROG Key` and set action to `nvidia-settings`  
