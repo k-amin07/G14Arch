@@ -429,7 +429,7 @@ Make the scripts executable by running
 ```
 chmod +x  ~/.local/share/scripts/switch_performance.sh ~/.local/share/scripts/switch_quiet.sh
 ```
-Go to Settings -> Power Management -> Energy Saving -> On AC Power. enable Run Script, select switch_performance script from to ~/.local/share/scripts/switch_performance.sh using open file dialogue button. Go to On Battery Tab, enable Run Script and select switch_quiet script path from ~/.local/.local/share/scripts/switch_quiet.sh. Manually giving path does not appear to work for some reason.
+Go to Settings -> Power Management -> Energy Saving -> On AC Power. enable Run Script, select switch_performance script from ~/.local/share/scripts/ using open file dialogue button. Go to On Battery Tab, enable Run Script and select switch_quiet script from ~/.local/.local/share/scripts/ using open file dialogue button. Manually giving path does not appear to work for some reason.
 
 **Optional:** Enable battery full charge notification. Go to KDE Settings -> Notifications -> Application Settings -> Configure Events. Select Charge Complete and Select Show a message in popup
 
