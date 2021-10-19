@@ -1,44 +1,46 @@
 # Table of contents
 
-- [Arch Linux on Asus ROG Zephyrus G14 (G401II)](#arch-linux-on-asus-rog-zephyrus-g14-g401ii)
-- [Basic Install](#arch-install)
-  - [Prepare and Booting ISO](#prepare-and-booting-iso)
-  - [Networking](#networking)
-  - [Format Disk](#format-disk)
-  - [Create encrypted filesystem](#create-encrypted-filesystem)
-  - [Create and Mount btrfs Subvolumes](#create-and-mount-btrfs-subvolumes)
-  - [Create a btrfs swapfile and remount subvols](#create-a-btrfs-swapfile-and-remount-subvols)
-  - [Install the system using pacstrap](#install-the-system-using-pacstrap)
-  - [Chroot into the new system and change language settings](#chroot-into-the-new-system-and-change-language-settings)
-  - [Add btrfs and encrypt to Initramfs](#add-btrfs-and-encrypt-to-initramfs)
-  - [Install Systemd Bootloader](#install-systemd-bootloader)
-  - [Set nvidia-nouveau onto blacklist](#set-nvidia-nouveau-onto-blacklist)
-  - [Leave Chroot and Reboot](#leave-chroot-and-reboot)
+- [Arch Linux on Asus ROG Zephyrus G14 (G401II)](#arch-linux-on-asus-rog-zephyrus-g14--g401ii-)
+- [Basic Install](#basic-install)
+  * [Prepare and Booting ISO](#prepare-and-booting-iso)
+  * [Networking](#networking)
+  * [Format Disk](#format-disk)
+  * [Create encrypted filesystem](#create-encrypted-filesystem)
+  * [Create and Mount btrfs Subvolumes](#create-and-mount-btrfs-subvolumes)
+  * [Create a btrfs swapfile and remount subvols](#create-a-btrfs-swapfile-and-remount-subvols)
+  * [Install the system using pacstrap](#install-the-system-using-pacstrap)
+  * [Chroot into the new system and change language settings](#chroot-into-the-new-system-and-change-language-settings)
+  * [Add btrfs and encrypt to Initramfs](#add-btrfs-and-encrypt-to-initramfs)
+  * [Install Systemd Bootloader](#install-systemd-bootloader)
+  * [Set nvidia-nouveau onto blacklist](#set-nvidia-nouveau-onto-blacklist)
+  * [Leave Chroot and Reboot](#leave-chroot-and-reboot)
 - [Finetuning after first Reboot](#finetuning-after-first-reboot)
-  - [Enable Networkmanager](#enable-networkmanager)
-  - [Create a new user](#create-a-new-user)
-  - [Setup Automatic Snapshots for pacman:](#setup-automatic-snapshots-for-pacman)
+  * [Enable Networkmanager](#enable-networkmanager)
+  * [Create a new user](#create-a-new-user)
+  * [Setup Automatic Snapshots for pacman:](#setup-automatic-snapshots-for-pacman-)
 - [Install Desktop Environment](#install-desktop-environment)
-  - [Get X.Org and KDE Plasma](#get-xorg-and-kde-plasma)
-  - [Remove extra KDE Packages](#remove-extra-kde-packages)
-  - [Oh-My-ZSH](#oh-my-zsh)
-  - [Setup Plymouth for nice Password Prompt during Boot](#setup-plymouth-for-nice-password-prompt-during-boot)
+  * [Get X.Org and KDE Plasma](#get-xorg-and-kde-plasma)
+  * [Remove extra KDE Packages](#remove-extra-kde-packages)
+  * [Oh-My-ZSH](#oh-my-zsh)
+  * [Setup Plymouth for nice Password Prompt during Boot](#setup-plymouth-for-nice-password-prompt-during-boot)
 - [Nvidia](#nvidia)
-  - [Optimus Manager](#optimus-manager)
+  * [Optimus Manager](#optimus-manager)
 - [Useful Customizations](#useful-customizations)
-  - [Install asusctl tool](#install-asusctl-tool)
-  - [Battery limit](#battery-limit)
-  - [ROG Key Map](#rog-key-map)
-  - [Change Fan Profile](#change-fan-profile)
-  - [Mic Mute Key](#mic-mute-key)
+  * [Install asusctl tool](#install-asusctl-tool)
+  * [Install ROG Kernel:](#install-rog-kernel-)
+  * [Switch Profile On Charger Connect](#switch-profile-on-charger-connect)
+  * [ROG Key Map](#rog-key-map)
+  * [Change Fan Profile](#change-fan-profile)
+  * [Mic Mute Key](#mic-mute-key)
 - [KDE Tweaks](#kde-tweaks)
-  - [Window Size](#window-size)
-  - [Touchpad Gestures](#touchpad-gestures)
-  - [Yet Another Magic Lamp](#yet-another-magic-lamp)
-  - [Maximize to new desktop](#maximize-to-new-desktop)
+  * [Window Size](#window-size)
+  * [Touchpad Gestures](#touchpad-gestures)
+  * [Yet Another Magic Lamp](#yet-another-magic-lamp)
+  * [Maximize to new desktop](#maximize-to-new-desktop)
+- [Fixing Audio on Linux](#fixing-audio-on-linux)
 - [Miscellaneous](#miscellaneous)
-  - [Fetch on Terminal Start](#fetch-on-terminal-start)
-  - [Key delay](#key-delay)
+  * [Fetch on Terminal Start](#fetch-on-terminal-start)
+  * [Key delay](#key-delay)
 
 # Arch Linux on Asus ROG Zephyrus G14 (G401II)
 Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on Asus ROG Zephyrus G14. Credits to [Unim8rix](https://github.com/Unim8trix/G14Arch), this guide is a fork of their guide with some variation.
@@ -389,7 +391,47 @@ asusctl fan-curve -m Balanced -f cpu -e true
 asusctl fan-curve -m Balanced -f gpu -e true
 ```
 
-For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS_GA401I#ASUSCtl) or the [Repository from Luke](https://gitlab.com/asus-linux/asusctl)
+For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS_GA401I#ASUSCtl) or the [Repository from Luke](https://gitlab.com/asus-linux/asusctl). asusctl requires kernel 5.15+, which at the time of writing has not been released. Install the ROG kernel instead.
+
+## Install ROG Kernel:
+After adding the above repo, install the ROG kernel by running
+```
+sudo pacman -S linux-rog linux-rog-headers 
+#kernel headers are very important otherwise nvidia module will not load, resulting in black screen.	
+```
+After installing the kernel, edit `/boot/loader/loader.conf` and add the following to it:
+```
+default arch-g14.conf
+timeout 3
+editor 0
+```
+
+then edit `/boot/loader/entries/arch-g14.conf` and add the following (replace UUID with correct UUID from arch.conf):
+```
+title   Arch Linux (g14)
+linux   /vmlinuz-linux-g14
+initrd  /amd-ucode.img
+initrd  /initramfs-linux-g14.img
+options cryptdevice=UUID=04ea2e96-fd5d-446c-bb6f-c83c0cc44158:luks root=/dev/mapper/luks rootflags=subvol=@ quiet splash loglevel=3 rd.systemd.show_status=auto
+```
+
+and finally do 
+```
+sudo mkinitcpio -p linux-g14
+```
+
+## Switch Profile On Charger Connect
+To automatically turn Performance profile on charger connect and Quiet profile on charger disconnect, run the following
+```
+echo "#\!/bin/bash\nasusctl profile -P Performance\n" > ~/.local/share/scripts/switch_performance.sh && echo "#\!/bin/bash\nasusctl profile -P Quiet\n" > ~/.local/share/scripts/switch_quiet.sh
+```
+Make the scripts executable by running
+```
+chmod +x  ~/.local/share/scripts/switch_performance.sh ~/.local/share/scripts/switch_quiet.sh
+```
+Go to Settings -> Power Management -> Energy Saving -> On AC Power. enable Run Script, select switch_performance script from to ~/.local/share/scripts/switch_performance.sh using open file dialogue button. Go to On Battery Tab, enable Run Script and select switch_quiet script path from ~/.local/.local/share/scripts/switch_quiet.sh. Manually giving path does not appear to work for some reason.
+
+**Optional:** Enable battery full charge notification. Go to KDE Settings -> Notifications -> Application Settings -> Configure Events. Select Charge Complete and Select Show a message in popup
 
 ## ROG Key Map
 Go to KDE Settings->Shortcuts->Custom Shortcuts. Click Edit->New->Global Shortcut->Command/URL. Name it `NvidiaSettings`. Set trigger to `ROG Key` and set action to `nvidia-settings`  
@@ -458,6 +500,38 @@ Trigger: Maximize only
 Position: Next to current
 ```
 ([git](https://github.com/Aetf/kwin-maxmize-to-new-desktop#window-class-blacklist-in-configuration-is-blank))
+
+# Fixing Audio on Linux
+Audio was exceptionally low on linux. To fix, first remove everything pulseaudio related by running:
+```
+sudo pacman -Rdd pulseaudio pulseaudio-alsa pulseaudio-bluetooth pulseaudio-ctl pulseaudio-equalizer pulseaudio-jack pulseaudio-lirc pulseaudio-rtp pulseaudio-zeroconf pulseaudio-equalizer-ladspa
+```
+Most of this may not be installed already so remove it from the command.
+Then, install pipewire and its related packages.
+```
+sudo pacman -S pipewire pipewire-pulse gst-plugin-pipewire pipewire-alsa pipewire-media-session
+```
+
+Install bluetooth related packages
+```
+sudo pacman -S bluez bluez-utils
+sudo systemctl enable bluetooth.service
+sudo systemctl start bluetooth.service
+```
+Install easyeffects
+```
+sudo pacman -S easyeffects
+```
+Run easyeffects and close. This will create the necessary directories.
+Install easyeffects-presets.
+```
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)"
+```
+Launch easyeffects again, click presets on top left, select Advanced Auto Gain. Close easyeffects, run it as daemon using
+```
+easyeffects --gapplication-service & 
+```
+It automatically adds itself to autostart, and runs as a service on reboot. No other config needed. [Source](https://askubuntu.com/questions/984109/dolby-equivalent-for-ubuntu)
 
 # Miscellaneous
 ## Fetch on Terminal Start
