@@ -27,7 +27,7 @@
   * [Optimus Manager](#optimus-manager)
 - [Useful Customizations](#useful-customizations)
   * [Install asusctl tool](#install-asusctl-tool)
-  * [Install ROG Kernel:](#install-rog-kernel-)
+  * [Install ROG Kernel](#install-rog-kernel)
   * [Switch Profile On Charger Connect](#switch-profile-on-charger-connect)
   * [ROG Key Map](#rog-key-map)
   * [Change Fan Profile](#change-fan-profile)
@@ -393,7 +393,7 @@ asusctl fan-curve -m Balanced -f gpu -e true
 
 For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS_GA401I#ASUSCtl) or the [Repository from Luke](https://gitlab.com/asus-linux/asusctl). asusctl requires kernel 5.15+, which at the time of writing has not been released. Install the ROG kernel instead.
 
-## Install ROG Kernel:
+## Install ROG Kernel
 After adding the above repo, install the ROG kernel by running
 ```
 sudo pacman -S linux-rog linux-rog-headers 
