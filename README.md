@@ -1,46 +1,49 @@
 # Table of contents
 
-- [Arch Linux on Asus ROG Zephyrus G14 (G401II)](#arch-linux-on-asus-rog-zephyrus-g14--g401ii-)
+- [Table of contents](#table-of-contents)
+- [Arch Linux on Asus ROG Zephyrus G14 (G401II)](#arch-linux-on-asus-rog-zephyrus-g14-g401ii)
 - [Basic Install](#basic-install)
-  * [Prepare and Booting ISO](#prepare-and-booting-iso)
-  * [Networking](#networking)
-  * [Format Disk](#format-disk)
-  * [Create encrypted filesystem](#create-encrypted-filesystem)
-  * [Create and Mount btrfs Subvolumes](#create-and-mount-btrfs-subvolumes)
-  * [Create a btrfs swapfile and remount subvols](#create-a-btrfs-swapfile-and-remount-subvols)
-  * [Install the system using pacstrap](#install-the-system-using-pacstrap)
-  * [Chroot into the new system and change language settings](#chroot-into-the-new-system-and-change-language-settings)
-  * [Add btrfs and encrypt to Initramfs](#add-btrfs-and-encrypt-to-initramfs)
-  * [Install Systemd Bootloader](#install-systemd-bootloader)
-  * [Set nvidia-nouveau onto blacklist](#set-nvidia-nouveau-onto-blacklist)
-  * [Leave Chroot and Reboot](#leave-chroot-and-reboot)
+	- [Prepare and Booting ISO](#prepare-and-booting-iso)
+	- [Networking](#networking)
+	- [Format Disk](#format-disk)
+	- [Create encrypted filesystem](#create-encrypted-filesystem)
+	- [Create and Mount btrfs Subvolumes](#create-and-mount-btrfs-subvolumes)
+	- [Create a btrfs swapfile and remount subvols](#create-a-btrfs-swapfile-and-remount-subvols)
+	- [Install the system using pacstrap](#install-the-system-using-pacstrap)
+	- [Chroot into the new system and change language settings](#chroot-into-the-new-system-and-change-language-settings)
+	- [Add btrfs and encrypt to Initramfs](#add-btrfs-and-encrypt-to-initramfs)
+	- [Install Systemd Bootloader](#install-systemd-bootloader)
+	- [Set nvidia-nouveau onto blacklist](#set-nvidia-nouveau-onto-blacklist)
+	- [Leave Chroot and Reboot](#leave-chroot-and-reboot)
 - [Finetuning after first Reboot](#finetuning-after-first-reboot)
-  * [Enable Networkmanager](#enable-networkmanager)
-  * [Create a new user](#create-a-new-user)
-  * [Setup Automatic Snapshots for pacman:](#setup-automatic-snapshots-for-pacman-)
+	- [Enable Networkmanager](#enable-networkmanager)
+	- [Create a new user](#create-a-new-user)
+	- [Update your system](#update-your-system)
+	- [Setup Automatic Snapshots for pacman:](#setup-automatic-snapshots-for-pacman)
 - [Install Desktop Environment](#install-desktop-environment)
-  * [Get X.Org and KDE Plasma](#get-xorg-and-kde-plasma)
-  * [Remove extra KDE Packages](#remove-extra-kde-packages)
-  * [Oh-My-ZSH](#oh-my-zsh)
-  * [Setup Plymouth for nice Password Prompt during Boot](#setup-plymouth-for-nice-password-prompt-during-boot)
+	- [Get X.Org and KDE Plasma](#get-xorg-and-kde-plasma)
+	- [Remove extra KDE Packages](#remove-extra-kde-packages)
+	- [Oh-My-ZSH](#oh-my-zsh)
+	- [Setup Plymouth for nice Password Prompt during Boot](#setup-plymouth-for-nice-password-prompt-during-boot)
 - [Nvidia](#nvidia)
-  * [Optimus Manager](#optimus-manager)
+	- [Optimus Manager](#optimus-manager)
 - [Useful Customizations](#useful-customizations)
-  * [Install asusctl tool](#install-asusctl-tool)
-  * [Install ROG Kernel](#install-rog-kernel)
-  * [Switch Profile On Charger Connect](#switch-profile-on-charger-connect)
-  * [ROG Key Map](#rog-key-map)
-  * [Change Fan Profile](#change-fan-profile)
-  * [Mic Mute Key](#mic-mute-key)
+	- [Install asusctl tool](#install-asusctl-tool)
+	- [Install ROG Kernel](#install-rog-kernel)
+	- [Switch Profile On Charger Connect](#switch-profile-on-charger-connect)
+	- [ROG Key Map](#rog-key-map)
+	- [Change Fan Profile](#change-fan-profile)
+	- [Mic Mute Key](#mic-mute-key)
 - [KDE Tweaks](#kde-tweaks)
-  * [Window Size](#window-size)
-  * [Touchpad Gestures](#touchpad-gestures)
-  * [Yet Another Magic Lamp](#yet-another-magic-lamp)
-  * [Maximize to new desktop](#maximize-to-new-desktop)
+	- [Window Size](#window-size)
+	- [Touchpad Gestures](#touchpad-gestures)
+	- [Yet Another Magic Lamp](#yet-another-magic-lamp)
+	- [Maximize to new desktop](#maximize-to-new-desktop)
 - [Fixing Audio on Linux](#fixing-audio-on-linux)
 - [Miscellaneous](#miscellaneous)
-  * [Fetch on Terminal Start](#fetch-on-terminal-start)
-  * [Key delay](#key-delay)
+	- [Fetch on Terminal Start](#fetch-on-terminal-start)
+	- [Key delay](#key-delay)
+	- [AUR Helper](#aur-helper)
 
 # Arch Linux on Asus ROG Zephyrus G14 (G401II)
 Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on Asus ROG Zephyrus G14. Credits to [Unim8rix](https://github.com/Unim8trix/G14Arch), this guide is a fork of their guide with some variation.
@@ -58,28 +61,42 @@ Boot Arch Linux using a prepared USB stick. [Rufus](https://rufus.ie/en/) can be
 
 For Network i use wireless, if you need wired please check the [Arch WiKi](https://wiki.archlinux.org/index.php/Network_configuration). 
 
-Launch `iwctl` and connect to your AP `station wlan0 connect YOURSSID` 
+Launch `iwctl` and connect to your AP like this:
+* `station wlan0 scan`
+* `station wlan0 get-networks`
+* `station wlan0 connect YOURSSID` 
+
 Type `exit` to leave.
 
 Update System clock with `timedatectl set-ntp true`
 
 ## Format Disk
 
-* My Disk is `nvme0n1`, check with `lsblk` 
-* Format Disk using `gdisk /dev/nvme0n1` with this simple layout:
+* My Disk is `nvme0n1`, check with `lsblk`
+* Format Disk using `cfdisk /dev/nvme0n1` with this simple layout:
 
-	* `o` for new partition table
-	* `n,1,<ENTER>,+512M,ef00` for EFI Boot
-	* `n,2,<ENTER>,<ENTER>,8300` for the linux partition
-	* `w` to save layout
+	**Mount Point**|**Partition**|**Partition type**|**Size**
+	:-----:|:-----:|:-----:|:-----:
+	/mnt/boot| /dev/boot\_partition| EFI system partition| At least 300MB \(Would suggest more if planning to run multiple kernels\)
+	/mnt| /dev/root\_partition| Linux Filesystem| Remainder of device
 
+After partitioning, run `lsblk` to identify your partitions:
 
-Format the EFI Partition
+_Sample `lsblk` output_:
+```
+NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+nvme0n1     259:0    0 476.9G  0 disk
+├─nvme0n1p1 259:1    0   300M  0 part 			 // This is our EFI partition
+└─nvme0n1p2 259:2    0 476.6G  0 part 			 // This is our Home partition
+```
+
+Identify your EFI partition, in this case `/dev/nvme0n1p1`, and format it like this:
 
 `mkfs.vfat -F 32 -n EFI /dev/nvme0n1p1` 
 
 
 ## Create encrypted filesystem 
+_**Note**: This step is optional. If you do not want to use encryption, you can skip this step. Just remember that you need to replace any lines that contain `/dev/mapper/luks` with your "Linux Filesystem" partition \(`/dev/nvme0n1p2` in this case\)._
 
 ```
 cryptsetup luksFormat /dev/nvme0n1p2  
@@ -105,11 +122,14 @@ Mount Partitions und create Subvol for btrfs. I dont want home, etc in my snapsh
 truncate -s 0 /mnt/@swap/swapfile
 chattr +C /mnt/@swap/swapfile
 btrfs property set /mnt/@swap/swapfile compression none
-fallocate -l 16G /mnt/@swap/swapfile
+fallocate -l ${SWAP_SIZE} /mnt/@swap/swapfile
 chmod 600 /mnt/@swap/swapfile
 mkswap /mnt/@swap/swapfile
 mkdir /mnt/@/swap
 ```
+
+Replace `${SWAP_SIZE}` with the amount of swap space you want. Typically you should have the same amount of swap as RAM. So if you have 16GB of ram, you should have 16GB of swap space. For example, a 16GB swap would be created like this:
+`fallocate -l 16G /mnt/@swap/swapfile`. Notice that the size in GB is denoted with a G as a suffix and **NOT** GB.
 
 Just unmount with `umount /mnt/` and remount with subvolumes
 
@@ -130,7 +150,7 @@ mount -o noatime,compress=zstd,space_cache,commit=120,subvolid=5 /dev/mapper/luk
 ```
 
 
-Check mountmoints with `df -Th` 
+Check mountpoints with `df -Th` 
 
 ## Install the system using pacstrap
 
@@ -175,13 +195,13 @@ Add a password for root using `passwd root`
 
 ## Add btrfs and encrypt to Initramfs
 
-`nano /etc/mkinitcpio.conf` and add `encrypt btrfs` to hooks between block/filesystems
+`nano /etc/mkinitcpio.conf` and add `encrypt btrfs` to hooks between block/filesystems. **NOTE:** If you chose to not encrypt your home partition, do not add `encrypt` to `HOOKS`.
 
 `HOOKS="base udev autodetect modconf block encrypt btrfs filesystems keyboard fsck `
 
 Also include `amdgpu` in the MODULES section
 
-create Initramfs using `mkinitcpio -p linux`
+create Initramfs using `mkinitcpio -P`
 
 ## Install Systemd Bootloader
 
@@ -206,6 +226,9 @@ initrd	/initramfs-linux.img
 
 copy boot-options with
 ` echo "options	cryptdevice=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2):luks root=/dev/mapper/luks rootflags=subvol=@ rw" >> /boot/loader/entries/arch.conf` 
+**NOTE:** If you chose to not encrypt your home partition, use this command:
+
+`ROOT_PARTITION=<!!!YOUR_ROOT_PARTITION_HERE!!!> && echo "options root=UUID=$(blkid -s UUID -o value ${ROOT_PARTITION}) rootflags=subvol=@ rw" >> /boot/loader/entries/arch.conf`
 
 ## Set nvidia-nouveau onto blacklist 
 
@@ -249,11 +272,15 @@ Edit `nano /etc/sudoers` and uncomment `%wheel ALL=(ALL) ALL`
 
 Now `exit` and relogin with the new MYUSERNAME
 
+## Update your system
+The first thing you should do after installing is to update your system. Open a commandd line and run:
+
+`sudo pacman -Syu`
 
 Install some Deamons before we reboot
 
 ```
-sudo pacman -Sy acpid dbus 
+sudo pacman -S acpid dbus 
 sudo systemctl enable acpid
 ```
 
@@ -269,7 +296,7 @@ Install xorg and kde packages
 
 ```
 pacman -S xorg 
-sudo pacman -Sy plasma kde-applications pulseaudio
+sudo pacman -S plasma kde-applications pulseaudio
 ```
 
 SDDM Loginmanager
@@ -298,7 +325,7 @@ To see what various applications do, check out the [kde-applications](https://ar
 I like to use oh-my-zsh with Powerlevel10K theme
 
 ```
-sudo pacman -Sy git git-lfs curl wget zsh zsh-completions firefox-i18n-de
+sudo pacman -S git git-lfs curl wget zsh zsh-completions firefox-i18n-de
 chsh -s /bin/zsh # (relogin to activate)
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 mkdir .local/share/fonts
@@ -315,6 +342,8 @@ Set `ZSH_THEME="powerlevel10k/powerlevel10k"` in `~/.zshrc`
 
 ## Setup Plymouth for nice Password Prompt during Boot
 
+**NOTE: AS OF 2021-10-30, Plymouth-git from AUR is currently broken!!!**
+
 Plymouth is in [AUR](https://aur.archlinux.org) , just clone the Repo and make the Package (i create a subfolder AUR within my homefolder)
 
 ```
@@ -329,7 +358,7 @@ Now modify the Hooks for the Initramfs, Plymouth must be right after "base udev"
 HOOKS="base udev plymouth plymouth-encrypt autodetect modconf block btrfs filesystems keyboard fsck
 ```
 
-Run `mkinitcpio -p linux` 
+Run `mkinitcpio -P` 
 
 Add some kernel-parameters to make boot smooth. Edit `/boot/loader/entries/arch.conf` and append to options
 
@@ -367,11 +396,13 @@ System was only going to sleep once and after that got stuck on shutdown and sle
 
 ## Install asusctl tool
 
+**NOTE: `asusctl` and `optimus-manager` may conflinct with eachother. If using `asusctl`, it is recommended to uninstall `optimus-manager` with `sudo pacman -Rns optimus-manager optimus-manager-qt`**
+
 Add [Luke Jones](https://asus-linux.org/)'s Repo to pacman.conf
 ```
 sudo bash -c "echo -e '\r[g14]\nSigLevel = DatabaseNever Optional TrustAll\nServer = https://arch.asus-linux.org\n' >> /etc/pacman.conf"
 
-sudo pacman -Sy asusctl
+sudo pacman -S asusctl
 ```
 Activate DBUS Messaging for the new asus deamon to get asus notifications upon changing fan profile etc.
 
@@ -382,7 +413,7 @@ systemctl --user start asus-notify
 
 Run the following commands:
 ```
-asusctl -c 85
+asusctl -c 85 		# Sets charge limit to 85% if you do not want this, do not execute this line
 asusctl fan-curve -m Quiet -f cpu -e true
 asusctl fan-curve -m Quiet -f gpu -e true 
 asusctl fan-curve -m Performance -f cpu -e true
@@ -396,7 +427,7 @@ For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS
 ## Install ROG Kernel
 After adding the above repo, install the ROG kernel by running
 ```
-sudo pacman -S linux-rog linux-rog-headers 
+sudo pacman -S linux-g14 linux-g14-headers 
 #kernel headers are very important otherwise nvidia module will not load, resulting in black screen.	
 ```
 After installing the kernel, edit `/boot/loader/loader.conf` and add the following to it:
@@ -406,18 +437,19 @@ timeout 3
 editor 0
 ```
 
-then edit `/boot/loader/entries/arch-g14.conf` and add the following (replace UUID with correct UUID from arch.conf):
+Then run `sudo cp /boot/loader/entries/arch.conf /boot/loader/entries/arch-g14.conf && sudo nano /boot/loader/entries/arch-g14.conf`
+
+Replace the lines that start with `title`, `linux`, and `initrd` with this:
 ```
 title   Arch Linux (g14)
 linux   /vmlinuz-linux-g14
 initrd  /amd-ucode.img
 initrd  /initramfs-linux-g14.img
-options cryptdevice=UUID=04ea2e96-fd5d-446c-bb6f-c83c0cc44158:luks root=/dev/mapper/luks rootflags=subvol=@ quiet splash loglevel=3 rd.systemd.show_status=auto
 ```
 
 and finally do 
 ```
-sudo mkinitcpio -p linux-g14
+sudo mkinitcpio -P
 ```
 
 ## Switch Profile On Charger Connect
@@ -542,3 +574,15 @@ After installing and enabling zsh and oh-my-zsh with powerlevel10k, create file 
 ## Key delay
 Reduce key input delay to 250 ms for a better keyboard experience.
 
+## AUR Helper
+You can install `paru`, an AUR helper like this:
+`cd ~ && mkdir paru && git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -sci && cd ~ && rm -r paru/`
+
+After installing `paru`, you can use it like pacman to install AUR packages.
+
+Examples:
+* paru -S \<package\>
+* paru -Syu
+* paru -Rns \<package\>
+
+_Do not run paru as root. It will ask for permission when it needs to._
