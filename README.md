@@ -508,6 +508,9 @@ To make brave launch in 1280x720, do the following:
 - line 111: change `Exec=brave %U` to `Exec=brave %U --window-size="1280,720"`
 - Repeat for line 111 and 223
 
+## Gamma Correction
+In display and monitor -> gamma, change gamma to 0.9 for better colors
+
 ## Touchpad Gestures
  Use [fusuma](https://github.com/iberianpig/fusuma) to get touchpad gestures. Create `~/.local/share/scripts/fusuma.sh` and add
  ```
@@ -586,3 +589,5 @@ Examples:
 * paru -Rns \<package\>
 
 _Do not run paru as root. It will ask for permission when it needs to._
+
+Alternatively, you can use [pamac](https://aur.archlinux.org/packages/pamac-aur/), which also has a gui.
