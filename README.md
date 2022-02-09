@@ -340,9 +340,9 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$
 
 Set `ZSH_THEME="powerlevel10k/powerlevel10k"` in `~/.zshrc`
 
-## Setup Plymouth for nice Password Prompt during Boot
+**Fixing terminal resize issue:** On Konsole and some other terminals, prompt is expected to be on the left side only. If right side of the prompt is enabled in powerlevel10k, then resizing Konsole results in the prompt becoming jittery and breaking to multiple lines as shown [here](https://github.com/romkatv/powerlevel10k/blob/master/README.md#horrific-mess-when-resizing-terminal-window). To fix the problem, open Konsole, go to settings -> edit current profile -> Scrolling and disable "Reflow lines" option.
 
-**NOTE: AS OF 2021-10-30, Plymouth-git from AUR is currently broken!!!**
+## Setup Plymouth for nice Password Prompt during Boot
 
 Plymouth is in [AUR](https://aur.archlinux.org) , just clone the Repo and make the Package (i create a subfolder AUR within my homefolder)
 
