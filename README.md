@@ -379,20 +379,21 @@ System was only going to sleep once and after that got stuck on shutdown and sle
 
 **NOTE: `asusctl` and `optimus-manager` may conflinct with eachother. If using `asusctl`, it is recommended to uninstall `optimus-manager` with `sudo pacman -Rns optimus-manager optimus-manager-qt`**
 
-Add [Luke Jones](https://asus-linux.org/)'s Repo to pacman.conf
-```
-sudo bash -c "echo -e '\r[g14]\nSigLevel = DatabaseNever Optional TrustAll\nServer = https://arch.asus-linux.org\n' >> /etc/pacman.conf"
+Add asus-linux repo to pacman as detailed [here](https://asus-linux.org/wiki/arch-guide/) and install the following tools
 
+```
+sudo pacman -Syu
 sudo pacman -S asusctl
+sudo pacman -S supergfxctl
+sudo pacman -S rog-control-center
 ```
-Activate DBUS Messaging for the new asus deamon to get asus notifications upon changing fan profile etc.
+Enable these tools by running
+```
+sudo systemctl enable --now power-profiles-daemon.service
+systemctl enable --now supergfxd
+```
 
-```
-systemctl --user enable asus-notify
-systemctl --user start asus-notify
-```
-
-Run the following commands:
+Run the following commands to set charge limit and enable Quiet, Performance and Balanced Profiles:
 ```
 asusctl -c 85 		# Sets charge limit to 85% if you do not want this, do not execute this line
 asusctl fan-curve -m Quiet -f cpu -e true
@@ -403,7 +404,9 @@ asusctl fan-curve -m Balanced -f cpu -e true
 asusctl fan-curve -m Balanced -f gpu -e true
 ```
 
-For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS_GA401I#ASUSCtl) or the [Repository from Luke](https://gitlab.com/asus-linux/asusctl). asusctl requires kernel 5.15+, which at the time of writing has not been released. Install the ROG kernel instead.
+For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS_GA401I#ASUSCtl) or the [Repository from Luke](https://gitlab.com/asus-linux/asusctl). 
+
+
 
 ## Install ROG Kernel
 After adding the above repo, install the ROG kernel by running
@@ -443,10 +446,10 @@ In `On AC Power` tab, set `Power Management Profile` to "Performance", in `Batte
 **Optional:** Enable battery full charge notification. Go to KDE Settings -> Notifications -> Application Settings -> Configure Events. Select Charge Complete and Select Show a message in popup
 
 ## ROG Key Map
-Go to KDE Settings->Shortcuts->Custom Shortcuts. Click Edit->New->Global Shortcut->Command/URL. Name it `NvidiaSettings`. Set trigger to `ROG Key` and set action to `nvidia-settings`  
+Go to KDE Settings->Shortcuts. Click `Add Application`, select `ROG Control Center` and add it. Select `ROG Control Center` from Applications list, add custom shortcut, press the ROG key and click Apply.
 
 ## Change Fan Profile
-Go to KDE Settings->Shortcuts->Custom Shortcuts. Click Edit->New->Global Shortcut->Command/URL. Name it  `ChangeFanProfile`, set trigger to `fn + f5` and action to `asusctl profile -n`
+Go to KDE Settings->Shortcuts. Click Add Command, in the dialogue box, enter `asusctl profile -n`. Set trigger to `fn + f5` and click Apply.
 
 ## Mic Mute Key
 Run `usb-devices` and look for the device that says `Product=N-KEY Device`. Note the vendor id. For my zephyrus it is `0b05`.  Run 
