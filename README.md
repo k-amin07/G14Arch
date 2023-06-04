@@ -271,10 +271,6 @@ sudo pacman -S acpid dbus
 sudo systemctl enable acpid
 ```
 
-## Setup Automatic Snapshots for pacman:
-To setup automatic snapshots everytime system updates, follow the section from Unim8rix's [guide](https://github.com/Unim8trix/G14Arch)
-
-
 # Install Desktop Environment
 
 ## Get X.Org and KDE Plasma
@@ -474,37 +470,6 @@ sudo systemd-hwdb update
 sudo udevadm trigger
 ```
 
-# KDE Tweaks
-
-## Gamma Correction
-In display and monitor -> gamma, change gamma to 0.9 for better colors
-
-## Touchpad Gestures
- Wayland has native support for touchpad gestures. To enable touchpad gestures on X, Use [fusuma](https://github.com/iberianpig/fusuma).
- After installation, create `~/.local/share/scripts/fusuma.sh` and add
- ```
- #!/bin/bash
- fusuma -d #for running in daemon mode
-```
-Add this scrpit to autostart in KDE settings. For macOS like gestures use [this config](https://github.com/iberianpig/fusuma/wiki/KDE-to-mimic-MacOS.). 4 finger gestures are not working. My config is in the repo.
-
-## Yet Another Magic Lamp
-
-A better [magic lamp](https://github.com/zzag/kwin-effects-yet-another-magic-lamp) effect. In latest plasma versions, exclude "disable unsupported effects" next to the search bar in settings for the effect to appear.
-
-## Maximize to new desktop
-In Kwin scripts, install "kwin-maximize-to-new-desktop" and run:
-```
-mkdir -p ~/.local/share/kservices5
-ln -s ~/.local/share/kwin/scripts/max2NewVirtualDesktop/metadata.desktop ~/.local/share/kservices5/max2NewVirtualDesktop.desktop
-```
-Then install kdesignerplugin through `pacman -S kdesignerplugin`. Logout and login again after configuration changes. My config:
-```
-Trigger: Maximize only
-Position: Next to current
-```
-([git](https://github.com/Aetf/kwin-maxmize-to-new-desktop#window-class-blacklist-in-configuration-is-blank))
-
 # Fixing Audio on Linux
 Audio was exceptionally low on linux. To fix, first remove everything pulseaudio related by running:
 ```
@@ -536,6 +501,92 @@ Launch easyeffects again, click presets on top left, select Advanced Auto Gain. 
 easyeffects --gapplication-service & 
 ```
 It automatically adds itself to autostart, and runs as a service on reboot. No other config needed. [Source](https://askubuntu.com/questions/984109/dolby-equivalent-for-ubuntu)
+
+# Setup Automatic Snapshots for pacman:
+At this point, we have installed everything we need. Reboot the system once to make sure everything works fine and set up BTRFS snapshots to ensure we always have a restore point in case something breaks in the future. To do so, first create a snapshot manually as follows
+```
+sudo -i
+btrfs sub snap / /.snapshots/STABLE
+cp /boot/vmlinuz-linux-g14 /boot/vmlinuz-linux-g14-stable
+cp /boot/amd-ucode.img /boot/amd-ucode-stable.img
+cp /boot/initramfs-linux-g14.img /boot/initramfs-linux-g14-stable.img
+cp /boot/loader/entries/arch-g14.conf /boot/loader/entries/arch-g14-stable.conf
+```
+Edit `/boot/loader/entries/arch-g14-stable.conf` to boot from `STABLE` snapshot
+```
+title Arch Linux (G14) Stable
+linux /vmlinuz-linux-g14-stable
+initrd /amd-ucode-stable.img
+initrd /initramfs-linux-g14-stable.img
+options cryptdevice=UUID=62b5e6e0-6376-46d8-9faf-fe391a58c6b1:luks root=/dev/mapper/luks rootflags=subvol=@snapshots/STABLE quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_priority=3 vt.global_cursor_default=0 rw
+```
+Now edit `/.snapshots/STABLE/etc/fstab` to change the root of the STABLE snapshot.
+```
+ ... LABEL=ROOTFS / btrfs rw,noatime,.....subvol=@snapshots/STABLE ...
+```
+Reboot the system, in the boot menu, select `Arch Linux (G14) Stable` to see if it boots correctly. If it does, boot back into `Arch Linux (G14)`. Copy the script from repo to `/usr/bin/autosnap` and make it executable with `chmod +x /usr/bin/autosnap`. Then copy the pacman hook script from the repo to `/etc/pacman.d/hooks/00-autosnap.hook`. Now every time pacman installs or upgrades something, the previous snapshot would be removed a new one will be created. Let's test everything one more time to ensure nothing breaks. To do so, install any package from pacman, e.g.
+```
+sudo pacman -S android-tools
+```
+The output should look something like this
+```
+resolving dependencies...
+looking for conflicting packages...
+
+Packages (1) android-tools-34.0.1-1
+
+Total Installed Size:  5.66 MiB
+
+:: Proceed with installation? [Y/n] Y
+(1/1) checking keys in keyring                                     [####################################] 100%
+(1/1) checking package integrity                                   [####################################] 100%
+(1/1) loading package files                                        [####################################] 100%
+(1/1) checking for file conflicts                                  [####################################] 100%
+(1/1) checking available disk space                                [####################################] 100%
+:: Running pre-transaction hooks...
+(1/1) Creating btrfs snapshot
+Delete subvolume (no-commit): '/.snapshots/STABLE'
+Create a snapshot of '/' in '/.snapshots/STABLE'
+:: Processing package changes...
+(1/1) installing android-tools                                     [####################################] 100%
+:: Running post-transaction hooks...
+(1/1) Arming ConditionNeedsUpdate...
+```
+
+Note that in pre-transaction hooks, it deletes the STABLE snapshot, takes the snapshot of the current system in `/.snapshots/STABLE` before proceeding to install the package. Boot back into the stable snapshot and run `adb` in the terminal. It should say `command not found`. Now boot back into the normal system and try running `adb` again, it would work without issues.
+
+
+# KDE Tweaks
+
+## Gamma Correction
+In display and monitor -> gamma, change gamma to 0.9 for better colors
+
+## Touchpad Gestures
+ Wayland has native support for touchpad gestures. To enable touchpad gestures on X, Use [fusuma](https://github.com/iberianpig/fusuma).
+ After installation, create `~/.local/share/scripts/fusuma.sh` and add
+ ```
+ #!/bin/bash
+ fusuma -d #for running in daemon mode
+```
+Add this scrpit to autostart in KDE settings. For macOS like gestures use [this config](https://github.com/iberianpig/fusuma/wiki/KDE-to-mimic-MacOS.). 4 finger gestures are not working. My config is in the repo.
+
+## Yet Another Magic Lamp
+
+A better [magic lamp](https://github.com/zzag/kwin-effects-yet-another-magic-lamp) effect. In latest plasma versions, exclude "disable unsupported effects" next to the search bar in settings for the effect to appear.
+
+## Maximize to new desktop
+In Kwin scripts, install "kwin-maximize-to-new-desktop" and run:
+```
+mkdir -p ~/.local/share/kservices5
+ln -s ~/.local/share/kwin/scripts/max2NewVirtualDesktop/metadata.desktop ~/.local/share/kservices5/max2NewVirtualDesktop.desktop
+```
+Then install kdesignerplugin through `pacman -S kdesignerplugin`. Logout and login again after configuration changes. My config:
+```
+Trigger: Maximize only
+Position: Next to current
+```
+([git](https://github.com/Aetf/kwin-maxmize-to-new-desktop#window-class-blacklist-in-configuration-is-blank))
+
 
 # Miscellaneous
 ## Fetch on Terminal Start
