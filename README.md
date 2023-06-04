@@ -434,15 +434,11 @@ sudo mkinitcpio -P
 ```
 
 ## Switch Profile On Charger Connect
-To automatically turn Performance profile on charger connect and Quiet profile on charger disconnect, run the following
+Plasma now supports various power profiles depending on battery status. Go to
 ```
-echo "#\!/bin/bash\nasusctl profile -P Performance\n" > ~/.local/share/scripts/switch_performance.sh && echo "#\!/bin/bash\nasusctl profile -P Quiet\n" > ~/.local/share/scripts/switch_quiet.sh
+KDE Settings -> Power Management -> Energy Saving
 ```
-Make the scripts executable by running
-```
-chmod +x  ~/.local/share/scripts/switch_performance.sh ~/.local/share/scripts/switch_quiet.sh
-```
-Go to Settings -> Power Management -> Energy Saving -> On AC Power. enable Run Script, select switch_performance script from ~/.local/share/scripts/ using open file dialogue button. Go to On Battery Tab, enable Run Script and select switch_quiet script from ~/.local/.local/share/scripts/ using open file dialogue button. Manually giving path does not appear to work for some reason.
+In `On AC Power` tab, set `Power Management Profile` to "Performance", in `Battery` tab, set it to "Balanced" and in `On Low Battery` set it to "Quiet"
 
 **Optional:** Enable battery full charge notification. Go to KDE Settings -> Notifications -> Application Settings -> Configure Events. Select Charge Complete and Select Show a message in popup
 
