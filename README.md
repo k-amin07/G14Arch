@@ -330,18 +330,12 @@ Set `ZSH_THEME="powerlevel10k/powerlevel10k"` in `~/.zshrc`
 
 ## Setup Plymouth for nice Password Prompt during Boot
 
-Plymouth is in [AUR](https://aur.archlinux.org) , just clone the Repo and make the Package (i create a subfolder AUR within my homefolder)
+Install plymouth from official repos if not already installed.
+
+Now modify the Hooks for the Initramfs, Plymouth must be right after "base udev".
 
 ```
-cd AUR
-git clone https://aur.archlinux.org/plymouth-git.git
-makepkg -is
-```
-
-Now modify the Hooks for the Initramfs, Plymouth must be right after "base udev". Delete encrypt hook, it will be replaced by plymouth-encrypt
-
-```
-HOOKS="base udev plymouth plymouth-encrypt autodetect modconf block btrfs filesystems keyboard fsck
+HOOKS="base udev plymouth autodetect modconf block encrypt btrfs filesystems keyboard fsck
 ```
 
 Run `mkinitcpio -P` 
