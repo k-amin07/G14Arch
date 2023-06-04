@@ -134,7 +134,7 @@ mount -o noatime,space_cache=v2,commit=120,subvol=@swap /dev/mapper/luks /mnt/sw
 
 mount /dev/nvme0n1p1 /mnt/boot/
 
-mount -o noatime,compress=zstd,space_cache,commit=120,subvolid=5 /dev/mapper/luks /mnt/btrfs/
+mount -o noatime,compress=zstd,space_cache=v2,commit=120,subvolid=5 /dev/mapper/luks /mnt/btrfs/
 ```
 
 
