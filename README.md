@@ -183,7 +183,7 @@ Add a password for root using `passwd root`
 
 ## Add btrfs and encrypt to Initramfs
 
-`nano /etc/mkinitcpio.conf` and add `encrypt btrfs` to hooks between block/filesystems. **NOTE:** If you chose to not encrypt your home partition, do not add `encrypt` to `HOOKS`.
+`nano /etc/mkinitcpio.conf` and add `encrypt btrfs` to hooks between block/filesystems.
 
 `HOOKS="base udev autodetect modconf block encrypt btrfs filesystems keyboard fsck `
 
