@@ -69,34 +69,22 @@ Launch `iwctl` and connect to your AP like this:
 Type `exit` to leave.
 
 Update System clock with `timedatectl set-ntp true`
-
-## Format Disk
+### Format Disk
 
 * My Disk is `nvme0n1`, check with `lsblk`
-* Format Disk using `cfdisk /dev/nvme0n1` with this simple layout:
+* Format Disk using `gdisk /dev/nvme0n1` with this simple layout:
 
-	**Mount Point**|**Partition**|**Partition type**|**Size**
-	:-----:|:-----:|:-----:|:-----:
-	/mnt/boot| /dev/boot\_partition| EFI system partition| At least 300MB \(Would suggest more if planning to run multiple kernels\)
-	/mnt| /dev/root\_partition| Linux Filesystem| Remainder of device
+	* `o` for new partition table
+	* `n,1,<ENTER>,+1024M,ef00` for EFI Boot
+	* `n,2,<ENTER>,<ENTER>,8300` for the linux partition
+	* `w` to save layout
 
-After partitioning, run `lsblk` to identify your partitions:
 
-_Sample `lsblk` output_:
-```
-NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
-nvme0n1     259:0    0 476.9G  0 disk
-├─nvme0n1p1 259:1    0   300M  0 part 			 // This is our EFI partition
-└─nvme0n1p2 259:2    0 476.6G  0 part 			 // This is our Home partition
-```
+Format the EFI Partition
 
-Identify your EFI partition, in this case `/dev/nvme0n1p1`, and format it like this:
-
-`mkfs.vfat -F 32 -n EFI /dev/nvme0n1p1` 
-
+`mkfs.vfat -F 32 -n EFI /dev/nvme0n1p1`
 
 ## Create encrypted filesystem 
-_**Note**: This step is optional. If you do not want to use encryption, you can skip this step. Just remember that you need to replace any lines that contain `/dev/mapper/luks` with your "Linux Filesystem" partition \(`/dev/nvme0n1p2` in this case\)._
 
 ```
 cryptsetup luksFormat /dev/nvme0n1p2  
@@ -134,15 +122,15 @@ Replace `${SWAP_SIZE}` with the amount of swap space you want. Typically you sho
 Just unmount with `umount /mnt/` and remount with subvolumes
 
 ```
-mount -o noatime,compress=zstd,space_cache,commit=120,subvol=@ /dev/mapper/luks /mnt
+mount -o noatime,compress=zstd,space_cache=v2,commit=120,subvol=@ /dev/mapper/luks /mnt
 mkdir -p /mnt/boot
 mkdir -p /mnt/home
 mkdir -p /mnt/.snapshots
 mkdir -p /mnt/btrfs
 
-mount -o noatime,compress=zstd,space_cache,commit=120,subvol=@home /dev/mapper/luks /mnt/home/
-mount -o noatime,compress=zstd,space_cache,commit=120,subvol=@snapshots /dev/mapper/luks /mnt/.snapshots/
-mount -o noatime,space_cache,commit=120,subvol=@swap /dev/mapper/luks /mnt/swap/
+mount -o noatime,compress=zstd,space_cache=v2,commit=120,subvol=@home /dev/mapper/luks /mnt/home/
+mount -o noatime,compress=zstd,space_cache=v2,commit=120,subvol=@snapshots /dev/mapper/luks /mnt/.snapshots/
+mount -o noatime,space_cache=v2,commit=120,subvol=@swap /dev/mapper/luks /mnt/swap/
 
 mount /dev/nvme0n1p1 /mnt/boot/
 
@@ -226,9 +214,7 @@ initrd	/initramfs-linux.img
 
 copy boot-options with
 ` echo "options	cryptdevice=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2):luks root=/dev/mapper/luks rootflags=subvol=@ rw" >> /boot/loader/entries/arch.conf` 
-**NOTE:** If you chose to not encrypt your home partition, use this command:
 
-`ROOT_PARTITION=<!!!YOUR_ROOT_PARTITION_HERE!!!> && echo "options root=UUID=$(blkid -s UUID -o value ${ROOT_PARTITION}) rootflags=subvol=@ rw" >> /boot/loader/entries/arch.conf`
 
 ## Set nvidia-nouveau onto blacklist 
 
@@ -494,19 +480,6 @@ sudo udevadm trigger
 ```
 
 # KDE Tweaks
-## Window Size
-I prefer the apps to open in windowed mode, in the center of the screen with 1280 * 720 resolution. To do this, add Window Rule, name it `Window Size`. Set the following rules
-
-- Window Class: Unimportant
-- Match whole window class: No
-- Window Types: Normal window (deselect all others)
-- Size: Apply Initially, 1280x720
-- Ignore Requested Geometry: Force, Yes.
-
-To make brave launch in 1280x720, do the following:
-- Edit `/usr/share/applications/brave-browser.desktop`
-- line 111: change `Exec=brave %U` to `Exec=brave %U --window-size="1280,720"`
-- Repeat for line 111 and 223
 
 ## Gamma Correction
 In display and monitor -> gamma, change gamma to 0.9 for better colors
@@ -518,6 +491,7 @@ In display and monitor -> gamma, change gamma to 0.9 for better colors
  fusuma -d #for running in daemon mode
 ```
 Add this scrpit to autostart in KDE settings. For macOS like gestures use [this config](https://github.com/iberianpig/fusuma/wiki/KDE-to-mimic-MacOS.). 4 finger gestures are not working. My config is in the repo.
+This is not needed for wayland as wayland has native support for touchpad gestures.
 
 ## Yet Another Magic Lamp
 
@@ -582,12 +556,5 @@ You can install `paru`, an AUR helper like this:
 `cd ~ && mkdir paru && git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -sci && cd ~ && rm -r paru/`
 
 After installing `paru`, you can use it like pacman to install AUR packages.
-
-Examples:
-* paru -S \<package\>
-* paru -Syu
-* paru -Rns \<package\>
-
-_Do not run paru as root. It will ask for permission when it needs to._
 
 Alternatively, you can use [pamac](https://aur.archlinux.org/packages/pamac-aur/), which also has a gui.
