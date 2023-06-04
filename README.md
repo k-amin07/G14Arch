@@ -247,9 +247,10 @@ nmcli device wifi connect YOURSSID password SSIDPASSWORD
 
 ## Create a new user 
 
-First create my new local user and point it to zsh
+First create my new local user and point it to zsh. zsh must be installed first.
 
 ```
+sudo pacman -S zsh zsh-completions
 useradd -m -g users -G wheel,power,audio -s /usr/bin/zsh MYUSERNAME
 passwd MYUSERNAME
 ```
@@ -311,8 +312,7 @@ To see what various applications do, check out the [kde-applications](https://ar
 I like to use oh-my-zsh with Powerlevel10K theme
 
 ```
-sudo pacman -S git git-lfs curl wget zsh zsh-completions firefox-i18n-de
-chsh -s /bin/zsh # (relogin to activate)
+sudo pacman -S git curl wget
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 mkdir .local/share/fonts
 cd .local/share/fonts
@@ -480,13 +480,13 @@ sudo udevadm trigger
 In display and monitor -> gamma, change gamma to 0.9 for better colors
 
 ## Touchpad Gestures
- Use [fusuma](https://github.com/iberianpig/fusuma) to get touchpad gestures. Create `~/.local/share/scripts/fusuma.sh` and add
+ Wayland has native support for touchpad gestures. To enable touchpad gestures on X, Use [fusuma](https://github.com/iberianpig/fusuma).
+ After installation, create `~/.local/share/scripts/fusuma.sh` and add
  ```
  #!/bin/bash
  fusuma -d #for running in daemon mode
 ```
 Add this scrpit to autostart in KDE settings. For macOS like gestures use [this config](https://github.com/iberianpig/fusuma/wiki/KDE-to-mimic-MacOS.). 4 finger gestures are not working. My config is in the repo.
-This is not needed for wayland as wayland has native support for touchpad gestures.
 
 ## Yet Another Magic Lamp
 
