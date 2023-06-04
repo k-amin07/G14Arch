@@ -452,6 +452,7 @@ Go to KDE Settings->Shortcuts. Click `Add Application`, select `ROG Control Cent
 Go to KDE Settings->Shortcuts. Click Add Command, in the dialogue box, enter `asusctl profile -n`. Set trigger to `fn + f5` and click Apply.
 
 ## Mic Mute Key
+Mic mute key should work out of the box in latest versions of plasma, provided `plasma-pa` package is installed, but if it doesnt, do the following steps.
 Run `usb-devices` and look for the device that says `Product=N-KEY Device`. Note the vendor id. For my zephyrus it is `0b05`.  Run 
 ```
 sudo find /sys -name modalias | xargs grep -i 0b05
