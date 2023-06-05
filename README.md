@@ -68,7 +68,7 @@ Launch `iwctl` and connect to your AP like this:
 Type `exit` to leave.
 
 Update System clock with `timedatectl set-ntp true`
-### Format Disk
+## Format Disk
 
 * My Disk is `nvme0n1`, check with `lsblk`
 * Format Disk using `gdisk /dev/nvme0n1` with this simple layout:
