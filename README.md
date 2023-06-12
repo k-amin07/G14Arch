@@ -35,6 +35,7 @@
 	- [Mic Mute Key](#mic-mute-key)
 - [Fixing Audio on Linux](#fixing-audio-on-linux)
 - [Setup Automatic Snapshots for pacman](#setup-automatic-snapshots-for-pacman)
+- [Installing Waydroid](#installing-waydroid)
 - [KDE Tweaks](#kde-tweaks)
 	- [Touchpad Gestures](#touchpad-gestures)
 	- [Yet Another Magic Lamp](#yet-another-magic-lamp)
@@ -554,7 +555,52 @@ Create a snapshot of '/' in '/.snapshots/STABLE'
 
 Note that in pre-transaction hooks, it deletes the STABLE snapshot, takes the snapshot of the current system in `/.snapshots/STABLE` before proceeding to install the package. Boot back into the stable snapshot and run `adb` in the terminal. It should say `command not found`. Now boot back into the normal system and try running `adb` again, it would work without issues.
 
+# Installing Waydroid
+Waydroid helps run android apps on Linux. With `linux-g14` kernel installed, install the binder_linux-dkms package. It is available through AUR, so first install an AUR helper like pamac
+```
+pamac install binder_linux-dkms waydroid
+```
+Then run these three commands, if any of them executes without any output or error, it means that the module is installed correctly
+```
+sudo modprobe -a binder-linux
+sudo modprobe -a binder_linux
+sudo modprobe -a binder
+```
+Then initialize waydroid and reboot (this will probably take a while because downloads from sourceforge are extremely slow)
+```
+sudo waydroid init 
+```
+After rebooting, verify if binderfs is correctly loaded by running
+```
+sudo ls -1 /dev/binderfs
+```
+It should return the following output (or something similar)
+```
+anbox-binder
+anbox-hwbinder
+anbox-vndbinder
+binder-control
+features
+```
+Enable waydroid by running
+```
+sudo systemctl enable --now waydroid-container
+```
+Then launch waydroid from application menu. Networking should work out of the box. To install an application, run
+```
+waydroid app install /path/to/apk
+```
+[Credits](https://forum.garudalinux.org/t/ultimate-guide-to-install-waydroid-in-any-arch-based-distro-especially-garuda/15902)
 
+To enable windowed mode, run
+```
+waydroid prop set persist.waydroid.multi_windows true
+```
+To disable on screen keyboard
+```
+$ waydroid show-full-ui
+Settings > System > Languages & input > Physical keyboard > Use on-screen keyboard
+```
 # KDE Tweaks
 
 ## Gamma Correction
