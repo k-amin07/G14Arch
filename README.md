@@ -568,7 +568,9 @@ sudo modprobe -a binder
 ```
 Then initialize waydroid and reboot (this will probably take a while because downloads from sourceforge are extremely slow)
 ```
-sudo waydroid init 
+sudo waydroid init
+# OR WITH GAPPS
+sudo waydroid init -s GAPPS
 ```
 After rebooting, verify if binderfs is correctly loaded by running
 ```
