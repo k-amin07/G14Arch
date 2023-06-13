@@ -592,7 +592,7 @@ https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/
 and
 https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/
 ```
-and download the latest ones. As soon as it starts download, before the redirect, click `Problems Downloading?` button and select a different mirror (I used one from US and it worked fine). Extract the downloaded files to get `system.img` and `vendor.img`. In official docs, these are supposed to be placed in `/usr/share/waydroid-extra/images/` but the automatically downloaded ones were located in `/var/lib/waydroid/images/`, so just copy both extracted files to both of these locations (just in case), run the following command and reboot.
+and download the latest ones. As soon as it starts download, before the redirect, click `Problems Downloading?` button and select a different mirror (I used one from US and it worked fine). Extract the downloaded files to get `system.img` and `vendor.img`. In official docs, these are supposed to be placed in `/usr/share/waydroid-extra/images/` but the automatically downloaded ones were located in `/var/lib/waydroid/images/`, so just copy both extracted files to both of these locations (just in case), run the following command and reboot. I used the GApps image, but the regular one can also be used.
 ```
 sudo waydroid init -f
 ```
@@ -628,6 +628,14 @@ To disable on screen keyboard
 $ waydroid show-full-ui
 Settings > System > Languages & input > Physical keyboard > Use on-screen keyboard
 ```
+To use GApps, start waydroid, then run
+```
+sudo waydroid shell
+ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA_ROOT=/apex/com.android.tzdata ANDROID_I18N_ROOT=/apex/com.android.i18n sqlite3 /data/data/com.google.android.gsf/databases/gservices.db "select * from main where name = \"android_id\";"
+```
+Go to [Google Device Registration](https://www.google.com/android/uncertified) and paste the numbers shown after "android_id|" to register. Wait for a few minutes for Google services to reflect the change and then restart waydroid.
+[Source](https://docs.waydro.id/faq/google-play-certification)
+
 # KDE Tweaks
 
 ## Gamma Correction
