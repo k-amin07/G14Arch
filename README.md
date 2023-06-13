@@ -82,7 +82,9 @@ Update System clock with `timedatectl set-ntp true`
 
 Format the EFI Partition
 
-`mkfs.vfat -F 32 -n EFI /dev/nvme0n1p1`
+```
+mkfs.vfat -F 32 -n EFI /dev/nvme0n1p1
+```
 
 ## Create encrypted filesystem 
 
@@ -93,16 +95,21 @@ cryptsetup open /dev/nvme0n1p2 luks
 
 ## Create and Mount btrfs Subvolumes
 
-`mkfs.btrfs -f -L ROOTFS /dev/mapper/luks` btrfs filesystem for root partition
+Create btrfs filesystem for root partition
+```
+mkfs.btrfs -f -L ROOTFS /dev/mapper/luks
+``` 
 
 
 Mount Partitions und create Subvol for btrfs. I dont want home, etc in my snapshots, so create subvol for them.
+```
+mount -t btrfs LABEL=ROOTFS /mnt
+btrfs sub create /mnt/@
+btrfs sub create /mnt/@home
+btrfs sub create /mnt/@snapshots
+btrfs sub create /mnt/@swap
+```
 
-* `mount -t btrfs LABEL=ROOTFS /mnt` Mount root filesystem to /mnt
-* `btrfs sub create /mnt/@`
-* `btrfs sub create /mnt/@home`
-* `btrfs sub create /mnt/@snapshots`
-* `btrfs sub create /mnt/@swap`
 
 ## Create a btrfs swapfile and remount subvols
 
@@ -147,10 +154,15 @@ pacstrap /mnt base base-devel linux linux-firmware btrfs-progs nano networkmanag
 ```
 
 After this, generate the filesystem table using 
-`genfstab -Lp /mnt >> /mnt/etc/fstab` 
+
+```
+genfstab -Lp /mnt >> /mnt/etc/fstab
+``` 
 
 Add swapfile 
-`echo "/swap/swapfile none swap defaults 0 0" >> /mnt/etc/fstab `
+```
+echo "/swap/swapfile none swap defaults 0 0" >> /mnt/etc/fstab
+```
 
 ## Chroot into the new system and change language settings
 You can use a hostname of your choice, I have gone with zephyrus-g14.
@@ -262,7 +274,9 @@ Now `exit` and relogin with the new MYUSERNAME
 ## Update your system
 The first thing you should do after installing is to update your system. Open a commandd line and run:
 
-`sudo pacman -Syu`
+```
+sudo pacman -Syu
+```
 
 Install some Deamons before we reboot
 
