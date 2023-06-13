@@ -246,7 +246,12 @@ Type `exit` to exit chroot
 
 Now its time to `reboot` into the new system!
 
+</details>
+
 # Finetuning after first Reboot
+
+<details>
+<summary>Click to expand!</summary>
 
 ## Enable Networkmanager
 
