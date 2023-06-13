@@ -586,6 +586,17 @@ sudo waydroid init
 # OR WITH GAPPS
 sudo waydroid init -s GAPPS
 ```
+On my system, the downloads were extremely slow because sourceforge selected the slowest possible mirror (I was getting ~45kbps). So alternatively, go to
+```
+https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/
+and
+https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/
+```
+and download the latest ones. As soon as it starts download, before the redirect, click `Problems Downloading?` button and select a different mirror (I used one from US and it worked fine). Extract the downloaded files to get `system.img` and `vendor.img`. In official docs, these are supposed to be placed in `/usr/share/waydroid-extra/images/` but the automatically downloaded ones were located in `/var/lib/waydroid/images/`, so just copy both extracted files to both of these locations (just in case), run the following command and reboot.
+```
+sudo waydroid init -f
+```
+
 After rebooting, verify if binderfs is correctly loaded by running
 ```
 sudo ls -1 /dev/binderfs
