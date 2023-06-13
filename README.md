@@ -25,7 +25,6 @@
 	- [Oh-My-ZSH](#oh-my-zsh)
 	- [Setup Plymouth for nice Password Prompt during Boot](#setup-plymouth-for-nice-password-prompt-during-boot)
 - [Nvidia](#nvidia)
-	- [Optimus Manager](#optimus-manager)
 - [Useful Customizations](#useful-customizations)
 	- [Install asusctl tool](#install-asusctl-tool)
 	- [Install ROG Kernel](#install-rog-kernel)
@@ -289,6 +288,8 @@ sudo systemctl enable acpid
 </details>
 
 # Install Desktop Environment
+<details>
+<summary>Click to expand!</summary>
 
 ## Get X.Org and KDE Plasma
 
@@ -367,7 +368,12 @@ sudo plymouth-set-default-theme -R bgrt
 
 For KDE Theming you could check this nice [Youtube Video from Linux Scoop](https://www.youtube.com/watch?v=2GYT7BK41zk)
 
+</details>
+
 # Nvidia
+<details>
+<summary>Click to expand!</summary>
+
 Install `nvidia` package from official repos. Double check to see if linux-headers are installed to avoid blackscreen on reboot.  Do NOT run `nvidia-xconfig` on Arch as it results in black screen. Install the following packages:
 ```
 sudo pacman -S nvidia-dkms nvidia-settings nvidia-prime acpi_call
@@ -385,8 +391,12 @@ In optimus manager qt, go to optimus tab, and select ACPI call switching method 
 - **Sleep/Shutdown issues**
 System was only going to sleep once and after that got stuck on shutdown and sleep. This happened because I had set switching method to bbswitch in optimus manager. Swithced to acpi_call to fix.
 
+</details>
 
 # Useful Customizations
+
+<details>
+<summary>Click to expand!</summary>
 
 ## Install asusctl tool
 
@@ -487,7 +497,13 @@ sudo systemd-hwdb update
 sudo udevadm trigger
 ```
 
+</details>
+
 # Fixing Audio on Linux
+
+<details>
+<summary>Click to expand!</summary>
+
 Audio was exceptionally low on linux. To fix, first remove everything pulseaudio related by running:
 ```
 sudo pacman -Rdd pulseaudio pulseaudio-alsa pulseaudio-bluetooth pulseaudio-ctl pulseaudio-equalizer pulseaudio-jack pulseaudio-lirc pulseaudio-rtp pulseaudio-zeroconf pulseaudio-equalizer-ladspa
@@ -519,7 +535,13 @@ easyeffects --gapplication-service &
 ```
 It automatically adds itself to autostart, and runs as a service on reboot. No other config needed. [Source](https://askubuntu.com/questions/984109/dolby-equivalent-for-ubuntu)
 
-# Setup Automatic Snapshots for pacman:
+</details>
+
+# Setup Automatic Snapshots for pacman
+
+<details>
+<summary>Click to expand!</summary>
+
 At this point, we have installed everything we need. Reboot the system once to make sure everything works fine and set up BTRFS snapshots to ensure we always have a restore point in case something breaks in the future. To do so, first create a snapshot manually as follows
 ```
 sudo -i
@@ -572,7 +594,13 @@ Create a snapshot of '/' in '/.snapshots/STABLE'
 
 Note that in pre-transaction hooks, it deletes the STABLE snapshot, takes the snapshot of the current system in `/.snapshots/STABLE` before proceeding to install the package. Boot back into the stable snapshot and run `adb` in the terminal. It should say `command not found`. Now boot back into the normal system and try running `adb` again, it would work without issues.
 
+</details>
+
 # Installing Waydroid
+
+<details>
+<summary>Click to expand!</summary>
+
 Waydroid helps run android apps on Linux. With `linux-g14` kernel installed, install the binder_linux-dkms package. It is available through AUR, so first install an AUR helper like pamac
 ```
 pamac install binder_linux-dkms waydroid
@@ -639,7 +667,12 @@ ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA
 Go to [Google Device Registration](https://www.google.com/android/uncertified) and paste the numbers shown after "android_id|" to register. Wait for a few minutes for Google services to reflect the change and then restart waydroid.
 [Source](https://docs.waydro.id/faq/google-play-certification)
 
+</details>
+
 # KDE Tweaks
+
+<details>
+<summary>Click to expand!</summary>
 
 ## Gamma Correction
 In display and monitor -> gamma, change gamma to 0.9 for better colors
@@ -670,8 +703,13 @@ Position: Next to current
 ```
 ([git](https://github.com/Aetf/kwin-maxmize-to-new-desktop#window-class-blacklist-in-configuration-is-blank))
 
+</details>
 
 # Miscellaneous
+
+<details>
+<summary>Click to expand!</summary>
+	
 ## Fetch on Terminal Start
 After installing and enabling zsh and oh-my-zsh with powerlevel10k, create file `~/.zshenv` and do the following:
 - Install fastfetch-git from pamac.
@@ -687,3 +725,5 @@ You can install `paru`, an AUR helper like this:
 After installing `paru`, you can use it like pacman to install AUR packages.
 
 Alternatively, you can use [pamac](https://aur.archlinux.org/packages/pamac-aur/), which also has a gui.
+
+</details>
