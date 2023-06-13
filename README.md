@@ -52,6 +52,8 @@ Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-nois
 
 
 # Basic Install
+<details>
+<summary>Click to expand!</summary>
 
 ## Prepare and Booting ISO
 
@@ -284,6 +286,7 @@ Install some Deamons before we reboot
 sudo pacman -S acpid dbus 
 sudo systemctl enable acpid
 ```
+</details>
 
 # Install Desktop Environment
 
