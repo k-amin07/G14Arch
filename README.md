@@ -534,7 +534,7 @@ Install easyeffects-presets.
 ```
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)"
 ```
-Launch easyeffects again, click presets on top left, select Advanced Auto Gain. Click Output in the top panel, Click Effects in the bottom panel. Click `Add Effect` in the left panel. Search for "Convolver" and add it. In the left panel, select `Convolver`, click `Impulses` in the right panel, search for `dolby` and load `Dolby Atmos...`. In the hamburger menu, click preferences and enable `Launch Service at startup` and close easyeffects. If needed, Easy effects can be run as daemon using
+Launch easyeffects again, click presets on top left, select `Boosted`. Click Output in the top panel, Click Effects in the bottom panel. Click `Add Effect` in the left panel. Search for "Convolver" and add it. In the left panel, select `Convolver`, click `Impulses` in the right panel, search for `dolby` and load `Dolby Atmos...`. In the hamburger menu, click preferences and enable `Launch Service at startup` and close easyeffects. If needed, Easy effects can be run as daemon using
 ```
 easyeffects --gapplication-service & 
 ```
