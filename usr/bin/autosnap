@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+set -e
+
 # Grab the necessary tools to avoid cluttering the script with absolute paths
 BTRFS=/usr/bin/btrfs
 SED=/usr/bin/sed
@@ -54,18 +56,18 @@ $SED -i "s|subvol=/@ |subvol=/@snapshots/$TODAY |" /.snapshots/$TODAY/etc/fstab
 
 # Create the bootloader entry for the old stable snapshot
 $CP /boot/loader/entries/arch-g14-stable.conf /boot/loader/entries/arch-g14-$TODAY.conf
-$SED -i "s|rootflags=subvol=@snapshots/STABLE|rootflags=subvol=@snapshots/$TODAY" /boot/loader/entries/arch-g14-$TODAY.conf
-$SED -i "s|title Arch Linux (G14) Stable|title Arch Linux (G14) $TODAY" /boot/loader/entries/arch-g14-$TODAY.conf
-$SED -i "s|linux /vmlinuz-linux-g14-stable|linux /vmlinuz-linux-g14-$TODAY" /boot/loader/entries/arch-g14-$TODAY.conf
-$SED -i "s|initrd /amd-ucode-stable.img|initrd /amd-ucode-$TODAY.img" /boot/loader/entries/arch-g14-$TODAY.conf
-$SED -i "s|initrd /initramfs-linux-g14-stable.img|initrd /initramfs-linux-g14-$TODAY.img" /boot/loader/entries/arch-g14-$TODAY.conf
+$SED -i "s|rootflags=subvol=@snapshots/STABLE|rootflags=subvol=@snapshots/$TODAY|" /boot/loader/entries/arch-g14-$TODAY.conf
+$SED -i "s|title Arch Linux (G14) Stable|title Arch Linux (G14) $TODAY|" /boot/loader/entries/arch-g14-$TODAY.conf
+$SED -i "s|linux /vmlinuz-linux-g14-stable|linux /vmlinuz-linux-g14-$TODAY|" /boot/loader/entries/arch-g14-$TODAY.conf
+$SED -i "s|initrd /amd-ucode-stable.img|initrd /amd-ucode-$TODAY.img|" /boot/loader/entries/arch-g14-$TODAY.conf
+$SED -i "s|initrd /initramfs-linux-g14-stable.img|initrd /initramfs-linux-g14-$TODAY.img|" /boot/loader/entries/arch-g14-$TODAY.conf
 
 # Copy kernel and initramfs for old stable snapshot
 $CP /boot/vmlinuz-linux-stable /boot/vmlinuz-linux-g14-$TODAY
 $CP /boot/amd-ucode-stable.img /boot/amd-ucode-$TODAY.img
-$CP /boot/initramfs-linux-stable.img /boot/initramfs-linux-g14-$TODAY.img
+$CP /boot/initramfs-linux-g14-stable.img /boot/initramfs-linux-g14-$TODAY.img
 
 # Copy current kernel and initramfs to stable snapshot
 $CP /boot/vmlinuz-linux-g14 /boot/vmlinuz-linux-stable
 $CP /boot/amd-ucode.img /boot/amd-ucode-stable.img
-$CP /boot/initramfs-linux-g14.img /boot/initramfs-linux-stable.img
+$CP /boot/initramfs-linux-g14.img /boot/initramfs-linux-g14-stable.img
