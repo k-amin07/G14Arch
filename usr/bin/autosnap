@@ -25,7 +25,7 @@ $RM -f /boot/loader/entries/arch-g14-$TODELETE.conf
 fi
 
 # Get today's date in UTC +5 time, in the format YYYY-MM-DDTHH:MM:SS
-TODAY=$(TZ=UTC+5 date -u +"%Y-%m-%dT%H:%M:%S" | sed 's/:/_/g')
+TODAY=$(TZ="Asia/Karachi" date +"%Y-%m-%dT%H:%M:%S" | sed 's/:/_/g')
 
 # Take a snapshot of the existing STABLE snapshot and delete the existing STABLE snapshot
 $BTRFS sub snap /.snapshots/STABLE /.snapshots/$TODAY
