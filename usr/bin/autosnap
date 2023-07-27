@@ -1,22 +1,71 @@
-#!/bin/bash
+#!/bin/zsh
 
-# Create btrfs snapshot in .snapshots/STABLE and move kernel,ramfs to bootloader
-# triggered by 00-autosnap.hook for pacman
-
+# Grab the necessary tools to avoid cluttering the script with absolute paths
 BTRFS=/usr/bin/btrfs
 SED=/usr/bin/sed
 CP=/usr/bin/cp
+RM=/usr/bin/rm
+DATE=/usr/bin/date
+LS=/usr/bin/ls
 
-# Delete old snapshot before we make a new
+# Count the number of snapshots excluding STABLE and find the oldest one 
+COUNT=$(/usr/bin/ls -1 -I STABLE | wc -l)
+TODELETE=$(/usr/bin/ls -I STABLE | sort | head -n 1)
+
+# If there are 5 snapshots, delete the oldest one and delete its bootloader entry
+if [[ $COUNT -eq 5 ]]
+then
+$BTRFS sub delete /.snapshots/$TODELETE
+$RM -f /boot/vmlinuz-linux-g14-$TODELETE
+$RM -f /boot/amd-ucode-$TODELETE.img
+$RM -f /boot/initramfs-linux-g14-$TODELETE.img
+$RM -f /boot/loader/entries/arch-g14-$TODELETE.conf
+fi
+
+# Get today's date in UTC +5 time, in the format YYYY-MM-DDTHH:MM:SS
+TODAY=$(TZ=UTC+5 date -u +"%FT%T")
+
+# Take a snapshot of the existing STABLE snapshot and delete the existing STABLE snapshot
+$BTRFS sub snap /.snapshots/STABLE /.snapshots/$TODAY
 $BTRFS sub delete /.snapshots/STABLE
+
+# Take a snapshot of the current root
 $BTRFS sub snap / /.snapshots/STABLE
 
-# Adjust fstab for snapshot
-$SED -i 's|subvol=@\t|subvol=@snapshots/STABLE |' /.snapshots/STABLE/etc/fstab
-$SED -i 's|subvol=@ |subvol=@snapshots/STABLE |' /.snapshots/STABLE/etc/fstab
+# Replace first occurance of subvol=@ with subvol=@snapshots/STABLE in the snapshots fstab.
+# We compare for both tab and space
+$SED -i "s|subvol=@\t|subvol=@snapshots/STABLE |" /.snapshots/STABLE/etc/fstab
+$SED -i "s|subvol=@ |subvol=@snapshots/STABLE |" /.snapshots/STABLE/etc/fstab
+# The above command assumes that the fstab is using relative paths, i.e. @ and @snapshots/STABLE in the btrfs root directory
+# The btrfs root directory is located in /@
 
-# Copy current kernel/ramfs for STABLE
-$CP /boot/vmlinuz-linux /boot/vmlinuz-linux-stable
+# The fstab maybe generated with subvol=/@. This represents the absolute path to the @ volume, relative to BTRFS root, (located in /btrfs).
+# In that case the previous commands will not replace anything, so we need to handle that
+$SED -i "s|subvol=/@\t|subvol=/@snapshots/STABLE |" /.snapshots/STABLE/etc/fstab
+$SED -i "s|subvol=/@ |subvol=/@snapshots/STABLE |" /.snapshots/STABLE/etc/fstab
+
+# We also need to update the fstab of /.snapshots/$TODAY
+$SED -i "s|subvol=@\t|subvol=@snapshots/$TODAY |" /.snapshots/$TODAY/etc/fstab
+$SED -i "s|subvol=@ |subvol=@snapshots/$TODAY |" /.snapshots/$TODAY/etc/fstab
+
+# Again checking with absolute path as well.
+$SED -i "s|subvol=/@\t|subvol=/@snapshots/$TODAY |" /.snapshots/$TODAY/etc/fstab
+$SED -i "s|subvol=/@ |subvol=/@snapshots/$TODAY |" /.snapshots/$TODAY/etc/fstab
+
+# Create the bootloader entry for the old stable snapshot
+$CP /boot/loader/entries/arch-g14-stable.conf /boot/loader/entries/arch-g14-$TODAY.conf
+$SED -i "s|rootflags=subvol=@snapshots/STABLE|rootflags=subvol=@snapshots/$TODAY" /boot/loader/entries/arch-g14-$TODAY.conf
+$SED -i "s|title Arch Linux (G14) Stable|title Arch Linux (G14) $TODAY" /boot/loader/entries/arch-g14-$TODAY.conf
+$SED -i "s|linux /vmlinuz-linux-g14-stable|linux /vmlinuz-linux-g14-$TODAY" /boot/loader/entries/arch-g14-$TODAY.conf
+$SED -i "s|initrd /amd-ucode-stable.img|initrd /amd-ucode-$TODAY.img" /boot/loader/entries/arch-g14-$TODAY.conf
+$SED -i "s|initrd /initramfs-linux-g14-stable.img|initrd /initramfs-linux-g14-$TODAY.img" /boot/loader/entries/arch-g14-$TODAY.conf
+
+# Copy kernel and initramfs for old stable snapshot
+$CP /boot/vmlinuz-linux-stable /boot/vmlinuz-linux-g14-$TODAY
+$CP /boot/amd-ucode-stable.img /boot/amd-ucode-$TODAY.img
+$CP /boot/initramfs-linux-stable.img /boot/initramfs-linux-g14-$TODAY.img
+
+# Copy current kernel and initramfs to stable snapshot
+$CP /boot/vmlinuz-linux-g14 /boot/vmlinuz-linux-stable
 $CP /boot/amd-ucode.img /boot/amd-ucode-stable.img
-$CP /boot/initramfs-linux.img /boot/initramfs-linux-stable.img
-
+$CP /boot/initramfs-linux-g14.img /boot/initramfs-linux-stable.img

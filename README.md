@@ -599,6 +599,8 @@ Create a snapshot of '/' in '/.snapshots/STABLE'
 
 Note that in pre-transaction hooks, it deletes the STABLE snapshot, takes the snapshot of the current system in `/.snapshots/STABLE` before proceeding to install the package. Boot back into the stable snapshot and run `adb` in the terminal. It should say `command not found`. Now boot back into the normal system and try running `adb` again, it would work without issues.
 
+**UPDATE 28/07/2023:** The script mentioned above has been renamed to `autosnap.old`. I have added a new `autosnap` script which maintains five recent snapshots, in addition to the STABLE snapshot. The snapshots are identified by the time of creation (in UTC +5, can be easily modified to your specific timezone). The script automatically deletes the oldest snapshot when the number of snapshots exceeds five. 
+
 </details>
 
 # Installing Waydroid
