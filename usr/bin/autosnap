@@ -11,8 +11,8 @@ DATE=/usr/bin/date
 LS=/usr/bin/ls
 
 # Count the number of snapshots excluding STABLE and find the oldest one 
-COUNT=$(/usr/bin/ls -1 -I STABLE | wc -l)
-TODELETE=$(/usr/bin/ls -I STABLE | sort | head -n 1)
+COUNT=$(/usr/bin/ls /.snapshots -1 -I STABLE | wc -l)
+TODELETE=$(/usr/bin/ls /.snapshots -I STABLE | sort | head -n 1)
 
 # If there are 5 snapshots, delete the oldest one and delete its bootloader entry
 if [[ $COUNT -eq 5 ]]
