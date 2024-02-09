@@ -113,6 +113,13 @@ btrfs sub create /mnt/@swap
 
 
 ## Create a btrfs swapfile and remount subvols
+Updated Method:
+```
+btrfs filesystem mkswapfile --size ${SWAP_SIZE} /mnt/@swap/swapfile
+```
+([Source](https://btrfs.readthedocs.io/en/latest/Swapfile.html))
+
+OLD METHOD:
 
 ```
 truncate -s 0 /mnt/@swap/swapfile
@@ -146,7 +153,10 @@ mount -o noatime,compress=zstd,space_cache=v2,commit=120,subvolid=5 /dev/mapper/
 ```
 
 
-Check mountpoints with `df -Th` 
+Check mountpoints with `df -Th` and enable swap file
+```
+swapon swapfile
+```
 
 ## Install the system using pacstrap
 
