@@ -701,9 +701,12 @@ colormgr get-profiles
 ```
 Find the profile that contains the filename you just copied. Copy the Profile ID and run
 ```
-sudo colormgr device-add-profile eDP-1 <Device ID goes here>
+sudo colormgr device-add-profile eDP-1 <Profile ID goes here>
 ```
-After that, in KDE settings, under color management, select this profile.
+After that, in KDE settings, under color management, select this profile. To make this profile the default, run
+```
+sudo colormgr device-make-profile-default eDP-1 <Profile ID goes here>
+```
 
 ## Touchpad Gestures
  Wayland has native support for touchpad gestures. To enable touchpad gestures on X, Use [fusuma](https://github.com/iberianpig/fusuma).
