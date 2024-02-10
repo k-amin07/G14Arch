@@ -694,6 +694,17 @@ Go to [Google Device Registration](https://www.google.com/android/uncertified) a
 ## Gamma Correction
 In display and monitor -> gamma, change gamma to 0.9 for better colors
 
+## Color profile
+Gamma correction is not available on KDE wayland yet. Install and run fastfetch to get the built-in display code. In my case it is `CMN14D5`. Google search for your code and append notebookcheck, click the first link. It would be for a different laptop that uses the same display. Press `Ctrl+F` and enter the code to ensure that the laptop uses this display. Download the ICC file and copy it to `/usr/share/color/icc/colord`. Then run 
+```
+colormgr get-profiles
+```
+Find the profile that contains the filename you just copied. Copy the Profile ID and run
+```
+sudo colormgr device-add-profile eDP-1 <Device ID goes here>
+```
+After that, in KDE settings, under color management, select this profile.
+
 ## Touchpad Gestures
  Wayland has native support for touchpad gestures. To enable touchpad gestures on X, Use [fusuma](https://github.com/iberianpig/fusuma).
  After installation, create `~/.local/share/scripts/fusuma.sh` and add
