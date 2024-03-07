@@ -550,6 +550,8 @@ easyeffects --gapplication-service &
 ```
 It automatically adds itself to autostart, and runs as a service on reboot. No other config needed. [Source](https://askubuntu.com/questions/984109/dolby-equivalent-for-ubuntu)
 
+Note: Do not set the audio device in system settings to easyeffets source or sink as it will cause problems. Use the default hardware device.
+
 </details>
 
 # Setup Automatic Snapshots for pacman
