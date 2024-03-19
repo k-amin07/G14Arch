@@ -393,7 +393,8 @@ Install `nvidia` package from official repos. Double check to see if linux-heade
 ```
 sudo pacman -S nvidia-dkms nvidia-settings nvidia-prime acpi_call
 ```
-**Important:** if using linux-g14 kernel from asuslinux as detailed in [Install ROG Kernel](#install-rog-kernel) section, DO NOT install `nvidia` package. Just use the `nvidia-dkms` package. Read more [here](https://asus-linux.org/wiki/arch-guide/#custom-kernel-drivers-fixes-hardware-support)
+**Important:** if using linux-g14 kernel from asuslinux as detailed in [Install ROG Kernel](#install-rog-kernel) section, DO NOT install `nvidia` package. Just use the `nvidia-dkms` package. Read more [here](https://asus-linux.org/guides/arch-guide/#custom-kernel-drivers-fixes-hardware-support)
+
 ## Optimus Manager
 Install optimus-manager and optimus-manager-qt. After rebooting, it should work fine. 
 
