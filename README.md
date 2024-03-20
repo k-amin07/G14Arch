@@ -43,6 +43,7 @@
 	- [Fetch on Terminal Start](#fetch-on-terminal-start)
 	- [Key delay](#key-delay)
 	- [AUR Helper](#aur-helper)
+ - [Quick Share](#QuickShare)
 
 # Arch Linux on Asus ROG Zephyrus G14 (G401II)
 Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on Asus ROG Zephyrus G14. Credits to [Unim8rix](https://github.com/Unim8trix/G14Arch), this guide is a fork of their guide with some variation.
@@ -757,6 +758,9 @@ You can install `paru`, an AUR helper like this:
 `cd ~ && mkdir paru && git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -sci && cd ~ && rm -r paru/`
 
 After installing `paru`, you can use it like pacman to install AUR packages.
+
+# QuickShare
+[This awesome project](https://github.com/Martichou/rquickshare) provides a rust implementation of quickshare for linux. Works great in my testing. Download the latest AppImage, make it executable and move it to `~/.local/bin`. On first start, it will add itself to autostart. Includes a tray icon as well.
 
 Alternatively, you can use [pamac](https://aur.archlinux.org/packages/pamac-aur/), which also has a gui.
 
