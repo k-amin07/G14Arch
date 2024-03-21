@@ -1,4 +1,4 @@
-# Table of contents
+## Table of contents
 
 - [Table of contents](#table-of-contents)
 - [Arch Linux on Asus ROG Zephyrus G14 (G401II)](#arch-linux-on-asus-rog-zephyrus-g14-g401ii)
@@ -13,53 +13,49 @@
 	- [Chroot into the new system and change language settings](#chroot-into-the-new-system-and-change-language-settings)
 	- [Add btrfs and encrypt to Initramfs](#add-btrfs-and-encrypt-to-initramfs)
 	- [Install Systemd Bootloader](#install-systemd-bootloader)
-	- [Set nvidia-nouveau onto blacklist](#set-nvidia-nouveau-onto-blacklist)
+	- [Blacklist Nouveau](#blacklist-nouveau)
 	- [Leave Chroot and Reboot](#leave-chroot-and-reboot)
 - [Finetuning after first Reboot](#finetuning-after-first-reboot)
 	- [Enable Networkmanager](#enable-networkmanager)
+	- [Install Zsh](#install-zsh)
 	- [Create a new user](#create-a-new-user)
-	- [Update your system](#update-your-system)
+	- [Update the system](#update-the-system)
 - [Install Desktop Environment](#install-desktop-environment)
 	- [Get X.Org and KDE Plasma](#get-xorg-and-kde-plasma)
-	- [Remove extra KDE Packages](#remove-extra-kde-packages)
 	- [Oh-My-ZSH](#oh-my-zsh)
 	- [Setup Plymouth for nice Password Prompt during Boot](#setup-plymouth-for-nice-password-prompt-during-boot)
-- [Nvidia](#nvidia)
-- [Useful Customizations](#useful-customizations)
+- [Customizations](#customizations)
 	- [Install asusctl tool](#install-asusctl-tool)
 	- [Install ROG Kernel](#install-rog-kernel)
+	- [Nvidia](#nvidia)
 	- [Switch Profile On Charger Connect](#switch-profile-on-charger-connect)
 	- [ROG Key Map](#rog-key-map)
 	- [Change Fan Profile](#change-fan-profile)
-	- [Mic Mute Key](#mic-mute-key)
 - [Fixing Audio on Linux](#fixing-audio-on-linux)
+	- [Mic Mute Key](#mic-mute-key)
 - [Setup Automatic Snapshots for pacman](#setup-automatic-snapshots-for-pacman)
+- [Install an AUR Helper](#install-an-aur-helper)
 - [Installing Waydroid](#installing-waydroid)
-- [KDE Tweaks](#kde-tweaks)
-	- [Touchpad Gestures](#touchpad-gestures)
-	- [Yet Another Magic Lamp](#yet-another-magic-lamp)
-	- [Maximize to new desktop](#maximize-to-new-desktop)
+- [Gamma Correction and Color profile](#gamma-correction-and-color-profile)
 - [Miscellaneous](#miscellaneous)
 	- [Fetch on Terminal Start](#fetch-on-terminal-start)
 	- [Key delay](#key-delay)
-	- [AUR Helper](#aur-helper)
- - [Quick Share](#QuickShare)
+ 	- [QuickShare](#quickshare)
+
 
 # Arch Linux on Asus ROG Zephyrus G14 (G401II)
-Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on Asus ROG Zephyrus G14. Credits to [Unim8rix](https://github.com/Unim8trix/G14Arch), this guide is a fork of their guide with some variation.
+Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on Asus ROG Zephyrus G14. Credits to [Unim8rix](https://github.com/Unim8trix/G14Arch), this guide is a fork of their guide.
 
 ![image](https://github.com/k-amin07/G14Arch/assets/28199865/dff27957-e943-4d99-9192-14ff3ba594f7)
 
 
-# Basic Install
-<details>
-<summary>Click to expand!</summary>
+## Basic Install
 
-## Prepare and Booting ISO
+### Prepare and Booting ISO
 
 Boot Arch Linux using a prepared USB stick. [Rufus](https://rufus.ie/en/) can be used on windows, [Etcher](https://www.balena.io/etcher/) can be used on Windows or Linux.
 
-## Networking
+### Networking
 
 For Network i use wireless, if you need wired please check the [Arch WiKi](https://wiki.archlinux.org/index.php/Network_configuration). 
 
@@ -71,7 +67,8 @@ Launch `iwctl` and connect to your AP like this:
 Type `exit` to leave.
 
 Update System clock with `timedatectl set-ntp true`
-## Format Disk
+
+### Format Disk
 
 * My Disk is `nvme0n1`, check with `lsblk`
 * Format Disk using `gdisk /dev/nvme0n1` with this simple layout:
@@ -88,14 +85,14 @@ Format the EFI Partition
 mkfs.vfat -F 32 -n EFI /dev/nvme0n1p1
 ```
 
-## Create encrypted filesystem 
+### Create encrypted filesystem 
 
 ```
 cryptsetup luksFormat /dev/nvme0n1p2  
 cryptsetup open /dev/nvme0n1p2 luks
 ```
 
-## Create and Mount btrfs Subvolumes
+### Create and Mount btrfs Subvolumes
 
 Create btrfs filesystem for root partition
 ```
@@ -113,29 +110,18 @@ btrfs sub create /mnt/@swap
 ```
 
 
-## Create a btrfs swapfile and remount subvols
-Updated Method:
+### Create a btrfs swapfile and remount subvols
+
 ```
 btrfs filesystem mkswapfile --size ${SWAP_SIZE} /mnt/@swap/swapfile
 ```
+
+
+Replace `${SWAP_SIZE}` with the amount of swap space you want. Typically you should have the same amount of swap as RAM. So if you have 16GB of ram, you should have 16GB of swap space. Note that the size in GB is denoted with a G as a suffix and **NOT** GB.
+
 ([Source](https://btrfs.readthedocs.io/en/latest/Swapfile.html))
 
-OLD METHOD:
-
-```
-truncate -s 0 /mnt/@swap/swapfile
-chattr +C /mnt/@swap/swapfile
-btrfs property set /mnt/@swap/swapfile compression none
-fallocate -l ${SWAP_SIZE} /mnt/@swap/swapfile
-chmod 600 /mnt/@swap/swapfile
-mkswap /mnt/@swap/swapfile
-mkdir /mnt/@/swap
-```
-
-Replace `${SWAP_SIZE}` with the amount of swap space you want. Typically you should have the same amount of swap as RAM. So if you have 16GB of ram, you should have 16GB of swap space. For example, a 16GB swap would be created like this:
-`fallocate -l 16G /mnt/@swap/swapfile`. Notice that the size in GB is denoted with a G as a suffix and **NOT** GB.
-
-Just unmount with `umount /mnt/` and remount with subvolumes
+After that, just unmount with `umount /mnt/` and remount with subvolumes
 
 ```
 mount -o noatime,compress=zstd,space_cache=v2,commit=120,subvol=@ /dev/mapper/luks /mnt
@@ -159,7 +145,7 @@ Check mountpoints with `df -Th` and enable swap file
 swapon swapfile
 ```
 
-## Install the system using pacstrap
+### Install the system using pacstrap
 
 ```
 pacstrap /mnt base base-devel linux linux-firmware btrfs-progs nano networkmanager amd-ucode
@@ -176,7 +162,7 @@ Add swapfile
 echo "/swap/swapfile none swap defaults 0 0" >> /mnt/etc/fstab
 ```
 
-## Chroot into the new system and change language settings
+### Chroot into the new system and change language settings
 You can use a hostname of your choice, I have gone with zephyrus-g14.
 ```
 arch-chroot /mnt
@@ -187,7 +173,7 @@ ln -sf /usr/share/zoneinfo/Asia/Karachi /etc/localtime
 hwclock --systohc
 ```
 
-Modify `nano /etc/hosts` with these entries. For static IPs, remove 127.0.1.1. Replace zephyrus-g14 with your hostname.
+Modify `/etc/hosts` and add these entries. For static IPs, remove 127.0.1.1. Replace zephyrus-g14 with your hostname.
 
 ```
 127.0.0.1		localhost
@@ -195,7 +181,7 @@ Modify `nano /etc/hosts` with these entries. For static IPs, remove 127.0.1.1. R
 127.0.1.1		zephyrus-g14.localdomain	zephyrus-g14
 ```
 
-`nano /etc/locale.gen` to uncomment the following line
+Edit `/etc/locale.gen` and uncomment the following line
 
 ```
 en_US.UTF-8
@@ -205,21 +191,25 @@ Execute `locale-gen` to create the locales now
 Add a password for root using `passwd root`
 
 
-## Add btrfs and encrypt to Initramfs
+### Add btrfs and encrypt to Initramfs
 
-`nano /etc/mkinitcpio.conf` and add `encrypt btrfs` to hooks between block/filesystems.
+Edit `/etc/mkinitcpio.conf` and add `encrypt btrfs` to hooks between block/filesystems.
 
-`HOOKS="base udev autodetect modconf block encrypt btrfs filesystems keyboard fsck `
+```
+HOOKS="base udev autodetect modconf block encrypt btrfs filesystems keyboard fsck
+```
 
-Also include `amdgpu` in the MODULES section
+Also include `amdgpu` in the MODULES section and run `mkinitcpio -P`
 
-create Initramfs using `mkinitcpio -P`
-
-## Install Systemd Bootloader
+### Install Systemd Bootloader
 
 `bootctl --path=/boot install` installs bootloader
 
-`nano /boot/loader/loader.conf` delete everything and add these few lines and save
+Edit the bootloader config using `nano`
+```
+nano /boot/loader/loader.conf
+```
+Replace the existing text with the following lines.
 
 ```
 default	arch.conf
@@ -227,7 +217,7 @@ timeout	3
 editor	0
 ```
 
-` nano /boot/loader/entries/arch.conf` with these lines and save. 
+Then, replace the contents of `/boot/loader/entries/arch.conf` with the following
 
 ```
 title	Arch Linux
@@ -236,37 +226,35 @@ initrd	/amd-ucode.img
 initrd	/initramfs-linux.img
 ```
 
-copy boot-options with
-` echo "options	cryptdevice=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2):luks root=/dev/mapper/luks rootflags=subvol=@ rw" >> /boot/loader/entries/arch.conf` 
+Finally, copy boot-options with
+```
+echo "options	cryptdevice=UUID=$(blkid -s UUID -o value /dev/nvme0n1p2):luks root=/dev/mapper/luks rootflags=subvol=@ rw" >> /boot/loader/entries/arch.conf
+```
 
 
-## Set nvidia-nouveau onto blacklist 
+### Blacklist Nouveau
 
-using `nano /etc/modprobe.d/blacklist-nvidia-nouveau.conf` with these lines
+Edit `/etc/modprobe.d/blacklist-nvidia-nouveau.conf` using `nano` and add the following lines to it
 
 ```
 	blacklist nouveau
 	options nouveau modeset=0
 ```
 
-## Leave Chroot and Reboot
+### Leave Chroot and Reboot
 
-Type `exit` to exit chroot
+Type `exit` to exit chroot and unmount all the volumes using
+```
+umount -R /mnt/
+```
+and reboot the system.
 
-`umount -R /mnt/` to unmount all volumes
+## Finetuning after first Reboot
 
-Now its time to `reboot` into the new system!
+After a successful reboot, we will perform some necessary initial setup.
 
-</details>
-
-# Finetuning after first Reboot
-
-<details>
-<summary>Click to expand!</summary>
-
-## Enable Networkmanager
-
-Configure WiFi Connection.
+### Enable Networkmanager
+To connect to WiFi using `nmcli`, enable the network manager
 
 ```
 systemctl enable NetworkManager
@@ -274,75 +262,71 @@ systemctl start NetworkManager
 nmcli device wifi connect YOURSSID password SSIDPASSWORD
 ```
 
-## Create a new user 
-
-First create my new local user and point it to zsh. zsh must be installed first.
-
+### Install Zsh
+I prefer zsh as my default shell. Install it with pacman if not already installed
 ```
 sudo pacman -S zsh zsh-completions
+```
+
+### Create a new user 
+
+Create a new local user, add it to relevant groups and point it to zsh.
+
+```
 useradd -m -g users -G wheel,power,audio -s /usr/bin/zsh MYUSERNAME
 passwd MYUSERNAME
 ```
 
-Edit `nano /etc/sudoers` and uncomment `%wheel ALL=(ALL) ALL`
+Now enable root access for the user by adding it to `sudoers`. Edit `/etc/sudoers` and uncomment 
 
-Now `exit` and relogin with the new MYUSERNAME
+```
+`%wheel ALL=(ALL) ALL`
+```
+Now `exit` and relogin as the newly created user.
 
-## Update your system
-The first thing you should do after installing is to update your system. Open a commandd line and run:
-
+### Update the system
+Ensure that the system is up to date by running
 ```
 sudo pacman -Syu
 ```
 
-Install some Deamons before we reboot
+Install `acpid` and `dbus` and reboot the system.
 
 ```
 sudo pacman -S acpid dbus 
 sudo systemctl enable acpid
 ```
-</details>
 
-# Install Desktop Environment
-<details>
-<summary>Click to expand!</summary>
 
-## Get X.Org and KDE Plasma
+## Install a Desktop Environment
 
-Install xorg and kde packages
+### Get X.Org and KDE Plasma
+
+Install xorg and kde packages. I prefer `wayland` over X, however, it is a good idea to have X installed as well. 
 
 ```
-pacman -S xorg 
-sudo pacman -S plasma kde-applications pulseaudio
+sudo pacman -S xorg plasma plasma-workspace sddm 
 ```
 
-SDDM Loginmanager
+Enable SDDM login manager
 
-```
-sudo pacman -S sddm
+``` 
 sudo systemctl enable sddm
 ```
 
 Reboot and login to your new Desktop.
 
-## Remove extra KDE Packages
-`kde-applications` installs a bunch of packages that I do not need so I removed them. First remove the following groups of applications.
-```
-sudo pacman -Rns kdepim kde-games kde-education kde-multimedia
-```
-Then, remove some apps from other groups too.
-```
-sudo pacman -R kwrite kcharselect yakuake kdebugsettings kfloppy filelight kteatime konqueror konversation kopete
-```
-To see what various applications do, check out the [kde-applications](https://archlinux.org/groups/x86_64/kde-applications/) group on Arch website.
 
+### Oh-My-ZSH
 
-## Oh-My-ZSH
-
-I like to use oh-my-zsh with Powerlevel10K theme
+I like to use `zsh` with `oh-my-zsh` with `Powerlevel10K` theme. To install that, first install the required dependencies.
 
 ```
 sudo pacman -S git curl wget
+```
+
+Get the necessary fonts
+```
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 mkdir .local/share/fonts
 cd .local/share/fonts
@@ -351,14 +335,18 @@ wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20B
 wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
 wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
 fc-cache -v
+```
+
+Clone `Powerlevel10K` repo
+```
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 ```
 
 Set `ZSH_THEME="powerlevel10k/powerlevel10k"` in `~/.zshrc`
 
-**Fixing terminal resize issue:** On Konsole and some other terminals, prompt is expected to be on the left side only. If right side of the prompt is enabled in powerlevel10k, then resizing Konsole results in the prompt becoming jittery and breaking to multiple lines as shown [here](https://github.com/romkatv/powerlevel10k/blob/master/README.md#horrific-mess-when-resizing-terminal-window). To fix the problem, open Konsole, go to settings -> edit current profile -> Scrolling and disable "Reflow lines" option.
+Run zsh and it should prompt you to set up the `Powerlevel10k` theme. If your prompt configuration includes text on the right side of terminal, disable "Reflow Lines" option in `Konsole` settings -> edit current profile -> Scrolling to avoid jitter when resizing terminal.
 
-## Setup Plymouth for nice Password Prompt during Boot
+### Setup Plymouth for nice Password Prompt during Boot
 
 Install plymouth from official repos if not already installed.
 
@@ -377,47 +365,14 @@ Add some kernel-parameters to make boot smooth. Edit `/boot/loader/entries/arch.
 ```
 
 
-For Plymouth Theming and Options, check [Plymouth on Arch Wiki](https://wiki.archlinux.org/title/plymouth). Issue the following command to set ROG logo as the plymouth theme.
+For Plymouth Theming and Options, check [Plymouth on Arch Wiki](https://wiki.archlinux.org/title/plymouth). Run the following command to set ROG logo as the plymouth theme.
 ```
 sudo plymouth-set-default-theme -R bgrt
 ```
 
-For KDE Theming you could check this nice [Youtube Video from Linux Scoop](https://www.youtube.com/watch?v=2GYT7BK41zk)
-
-</details>
-
-# Nvidia
-<details>
-<summary>Click to expand!</summary>
-
-Install `nvidia` package from official repos. Double check to see if linux-headers are installed to avoid blackscreen on reboot.  Do NOT run `nvidia-xconfig` on Arch as it results in black screen. Install the following packages:
-```
-sudo pacman -S nvidia-dkms nvidia-settings nvidia-prime acpi_call
-```
-**Important:** if using linux-g14 kernel from asuslinux as detailed in [Install ROG Kernel](#install-rog-kernel) section, DO NOT install `nvidia` package. Just use the `nvidia-dkms` package. Read more [here](https://asus-linux.org/guides/arch-guide/#custom-kernel-drivers-fixes-hardware-support)
-
-## Optimus Manager
-Install optimus-manager and optimus-manager-qt. After rebooting, it should work fine. 
-
-- **Type C external display**
-HDMI works out of the box, displays can be connected to type C port but require switching to dedicated graphics. Can be done either through asusctl or Optimus Manager QT.
-	
-- **Optimus Manager configuration**
-In optimus manager qt, go to optimus tab, and select ACPI call switching method and set PCI reset to No. Enable PCI remove. Startup mode is integrated. In Nvidia, set dynamic power management to fine. Modeset, Pat and overclocking options.
-
-- **Sleep/Shutdown issues**
-System was only going to sleep once and after that got stuck on shutdown and sleep. This happened because I had set switching method to bbswitch in optimus manager. Swithced to acpi_call to fix.
-
-</details>
-
-# Useful Customizations
-
-<details>
-<summary>Click to expand!</summary>
-
-## Install asusctl tool
-
-**NOTE: `asusctl` and `optimus-manager` may conflinct with eachother. If using `asusctl`, it is recommended to uninstall `optimus-manager` with `sudo pacman -Rns optimus-manager optimus-manager-qt`**
+## Customizations
+Use these customizations to get the most out of your system.
+### Install asusctl tool
 
 Add asus-linux repo to pacman as detailed [here](https://asus-linux.org/wiki/arch-guide/) and install the following tools
 
@@ -447,21 +402,23 @@ asusctl fan-curve -m Balanced -f gpu -e true
 For fine-tuning read the [Arch Linux Wiki](https://wiki.archlinux.org/title/ASUS_GA401I#ASUSCtl) or the [Repository from Luke](https://gitlab.com/asus-linux/asusctl). 
 
 
-
-## Install ROG Kernel
+### Install ROG Kernel
 After adding the above repo, install the ROG kernel by running
 ```
 sudo pacman -S linux-g14 linux-g14-headers 
 #kernel headers are very important otherwise nvidia module will not load, resulting in black screen.	
 ```
-After installing the kernel, edit `/boot/loader/loader.conf` and add the following to it:
+Then edit `/boot/loader/loader.conf` and add the following to it:
 ```
 default arch-g14.conf
 timeout 3
 editor 0
 ```
 
-Then run `sudo cp /boot/loader/entries/arch.conf /boot/loader/entries/arch-g14.conf && sudo nano /boot/loader/entries/arch-g14.conf`
+Then run 
+```
+sudo cp /boot/loader/entries/arch.conf /boot/loader/entries/arch-g14.conf && sudo nano /boot/loader/entries/arch-g14.conf
+```
 
 Replace the lines that start with `title`, `linux`, and `initrd` with this:
 ```
@@ -476,7 +433,17 @@ and finally do
 sudo mkinitcpio -P
 ```
 
-## Switch Profile On Charger Connect
+Reboot and select the `Arch Linux (g14)` entry from the boot menu.
+
+### Nvidia
+Install the following packages
+
+```
+sudo pacman -S nvidia-dkms acpi_call
+```
+
+
+### Switch Profile On Charger Connect
 Plasma now supports various power profiles depending on battery status. Go to
 ```
 KDE Settings -> Power Management -> Energy Saving
@@ -485,41 +452,14 @@ In `On AC Power` tab, set `Power Management Profile` to "Performance", in `Batte
 
 **Optional:** Enable battery full charge notification. Go to KDE Settings -> Notifications -> Application Settings -> Configure Events. Select Charge Complete and Select Show a message in popup
 
-## ROG Key Map
+### ROG Key Map
 Go to KDE Settings->Shortcuts. Click `Add Application`, select `ROG Control Center` and add it. Select `ROG Control Center` from Applications list, add custom shortcut, press the ROG key and click Apply.
 
-## Change Fan Profile
+### Change Fan Profile
 Go to KDE Settings->Shortcuts. Click Add Command, in the dialogue box, enter `asusctl profile -n`. Set trigger to `fn + f5` and click Apply.
 
-## Mic Mute Key
-Mic mute key should work out of the box in latest versions of plasma, provided `plasma-pa` package is installed, but if it doesnt, do the following steps.
-Run `usb-devices` and look for the device that says `Product=N-KEY Device`. Note the vendor id. For my zephyrus it is `0b05`.  Run 
-```
-sudo find /sys -name modalias | xargs grep -i 0b05
-```
+## Fixing Audio on Linux
 
-Find the line that goes like:
-```
-.../input/input18/modalias:input:b0003v0B05p1866e0110-e0...
-```
-Copy the part after `input:`, before the first `-e`. In my case, it is `b0003v0B05p1866e0110`.  Create a file named `/etc/udev/hwdb.d/90-nkey.hwdb` and add
-```
-/etc/udev/hwdb.d/90-nkey.hwdb
-evdev:input:b0003v0B05p1866*
- KEYBOARD_KEY_ff31007c=f20 # x11 mic-mute, space in start is important in this line
-```
-After that, update `hwdb`.
-```
-sudo systemd-hwdb update
-sudo udevadm trigger
-```
-
-</details>
-
-# Fixing Audio on Linux
-
-<details>
-<summary>Click to expand!</summary>
 
 Audio was exceptionally low on linux. To fix, first remove everything pulseaudio related by running:
 ```
@@ -528,7 +468,7 @@ sudo pacman -Rdd pulseaudio pulseaudio-alsa pulseaudio-bluetooth pulseaudio-ctl 
 Most of this may not be installed already so remove it from the command.
 Then, install pipewire and its related packages.
 ```
-sudo pacman -S pipewire pipewire-pulse gst-plugin-pipewire pipewire-alsa pipewire-media-session
+sudo pacman -S pipewire pipewire-pulse gst-plugin-pipewire pipewire-alsa pipewire-media-session plasma pa
 ```
 
 Install bluetooth related packages
@@ -554,12 +494,32 @@ It automatically adds itself to autostart, and runs as a service on reboot. No o
 
 Note: Do not set the audio device in system settings to easyeffets source or sink as it will cause problems. Use the default hardware device.
 
-</details>
+### Mic Mute Key
+Mic mute key should work out of the box in latest versions of plasma, provided `plasma-pa` package is installed. If it doesnt work, do the following steps.
+Run `usb-devices` and look for the device that says `Product=N-KEY Device`. Note the vendor id. For my zephyrus it is `0b05`.  Run 
+```
+sudo find /sys -name modalias | xargs grep -i 0b05
+```
 
-# Setup Automatic Snapshots for pacman
+Find the line that goes like:
+```
+.../input/input18/modalias:input:b0003v0B05p1866e0110-e0...
+```
+Copy the part after `input:`, before the first `-e`. In my case, it is `b0003v0B05p1866e0110`.  Create a file named `/etc/udev/hwdb.d/90-nkey.hwdb` and add
+```
+/etc/udev/hwdb.d/90-nkey.hwdb
+evdev:input:b0003v0B05p1866*
+ KEYBOARD_KEY_ff31007c=f20 # x11 mic-mute, space in start is important in this line
+```
+After that, update `hwdb`.
+```
+sudo systemd-hwdb update
+sudo udevadm trigger
+```
 
-<details>
-<summary>Click to expand!</summary>
+
+
+## Setup Automatic Snapshots for pacman
 
 At this point, we have installed everything we need. Reboot the system once to make sure everything works fine and set up BTRFS snapshots to ensure we always have a restore point in case something breaks in the future. To do so, first create a snapshot manually as follows
 ```
@@ -582,7 +542,11 @@ Now edit `/.snapshots/STABLE/etc/fstab` to change the root of the STABLE snapsho
 ```
  ... LABEL=ROOTFS / btrfs rw,noatime,.....subvol=@snapshots/STABLE ...
 ```
-Reboot the system, in the boot menu, select `Arch Linux (G14) Stable` to see if it boots correctly. If it does, boot back into `Arch Linux (G14)`. Copy the script from repo to `/usr/bin/autosnap` and make it executable with `chmod +x /usr/bin/autosnap`. Then copy the pacman hook script from the repo to `/etc/pacman.d/hooks/00-autosnap.hook`. Now every time pacman installs or upgrades something, the previous snapshot would be removed a new one will be created. Let's test everything one more time to ensure nothing breaks. To do so, install any package from pacman, e.g.
+Reboot the system, in the boot menu, select `Arch Linux (G14) Stable` to see if it boots correctly. If it does, boot back into `Arch Linux (G14)`. 
+
+Copy the script from repo to `/usr/bin/autosnap` and make it executable with `chmod +x /usr/bin/autosnap`. Then copy the pacman hook script from the repo to `/etc/pacman.d/hooks/00-autosnap.hook`. 
+
+Now every time pacman installs or upgrades something, the oldest snapshot would be removed a new one will be created. Let's test everything one more time to ensure nothing breaks. To do so, install any package from pacman, e.g.
 ```
 sudo pacman -S android-tools
 ```
@@ -613,32 +577,25 @@ Create a snapshot of '/' in '/.snapshots/STABLE'
 
 Note that in pre-transaction hooks, it deletes the STABLE snapshot, takes the snapshot of the current system in `/.snapshots/STABLE` before proceeding to install the package. Boot back into the stable snapshot and run `adb` in the terminal. It should say `command not found`. Now boot back into the normal system and try running `adb` again, it would work without issues.
 
-**UPDATE 28/07/2023:** The script mentioned above has been renamed to `autosnap.old`. I have added a new `autosnap` script which maintains five recent snapshots, in addition to the STABLE snapshot. The snapshots are identified by the time of creation (in UTC +5, can be easily modified to your specific timezone). The script automatically deletes the oldest snapshot when the number of snapshots exceeds five. 
+The script maintains five recent snapshots, allowing you to boot back into an older one if something breaks.
 
-</details>
+## Install an AUR Helper
+Install [pamac](https://aur.archlinux.org/packages/pamac-aur/) to easily manage AUR packages with a GUI. Enable AUR in pamac settings.
 
-# Installing Waydroid
-
-<details>
-<summary>Click to expand!</summary>
-
-Waydroid helps run android apps on Linux. With `linux-g14` kernel installed, install the binder_linux-dkms package. It is available through AUR, so first install an AUR helper like pamac
-```
-pamac install binder_linux-dkms waydroid
-```
-Then run these three commands, if any of them executes without any output or error, it means that the module is installed correctly
+## Installing Waydroid
+Waydroid helps run android apps on Linux. With `linux-g14` kernel installed, install the `binder_linux-dkms` package, which is available through AUR. Run these three commands, if at least one of them executes without any output or error, it means that the module is installed correctly
 ```
 sudo modprobe -a binder-linux
 sudo modprobe -a binder_linux
 sudo modprobe -a binder
 ```
-Then initialize waydroid and reboot (this will probably take a while because downloads from sourceforge are extremely slow)
+Now initialize waydroid and reboot (this will probably take a while because downloads from sourceforge are extremely slow)
 ```
 sudo waydroid init
 # OR WITH GAPPS
 sudo waydroid init -s GAPPS
 ```
-On my system, the downloads were extremely slow because sourceforge selected the slowest possible mirror (I was getting ~45kbps). So alternatively, go to
+Sourceforge tends to selected the slowest possible mirror (I was getting ~45kbps). So alternatively, go to
 ```
 https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/
 and
@@ -688,17 +645,9 @@ ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA
 Go to [Google Device Registration](https://www.google.com/android/uncertified) and paste the numbers shown after "android_id|" to register. Wait for a few minutes for Google services to reflect the change and then restart waydroid.
 [Source](https://docs.waydro.id/faq/google-play-certification)
 
-</details>
 
-# KDE Tweaks
-
-<details>
-<summary>Click to expand!</summary>
-
-## Gamma Correction
-In display and monitor -> gamma, change gamma to 0.9 for better colors
-
-## Color profile
+## Gamma Correction and Color profile
+On X11, in settings, under display and monitor -> gamma, change gamma to 0.9 for better colors.
 Gamma correction is not available on KDE wayland yet. Install and run fastfetch to get the built-in display code. In my case it is `CMN14D5`. Google search for your code and append notebookcheck, click the first link. It would be for a different laptop that uses the same display. Press `Ctrl+F` and enter the code to ensure that the laptop uses this display. Download the ICC file and copy it to `/usr/share/color/icc/colord`. Then run 
 ```
 colormgr get-profiles
@@ -712,56 +661,15 @@ After that, in KDE settings, under color management, select this profile. To mak
 sudo colormgr device-make-profile-default eDP-1 <Profile ID goes here>
 ```
 
-## Touchpad Gestures
- Wayland has native support for touchpad gestures. To enable touchpad gestures on X, Use [fusuma](https://github.com/iberianpig/fusuma).
- After installation, create `~/.local/share/scripts/fusuma.sh` and add
- ```
- #!/bin/bash
- fusuma -d #for running in daemon mode
-```
-Add this scrpit to autostart in KDE settings. For macOS like gestures use [this config](https://github.com/iberianpig/fusuma/wiki/KDE-to-mimic-MacOS.). 4 finger gestures are not working. My config is in the repo.
-
-## Yet Another Magic Lamp
-
-A better [magic lamp](https://github.com/zzag/kwin-effects-yet-another-magic-lamp) effect. In latest plasma versions, exclude "disable unsupported effects" next to the search bar in settings for the effect to appear.
-
-## Maximize to new desktop
-In Kwin scripts, install "kwin-maximize-to-new-desktop" and run:
-```
-mkdir -p ~/.local/share/kservices5
-ln -s ~/.local/share/kwin/scripts/max2NewVirtualDesktop/metadata.desktop ~/.local/share/kservices5/max2NewVirtualDesktop.desktop
-```
-Then install kdesignerplugin through `pacman -S kdesignerplugin`. Logout and login again after configuration changes. My config:
-```
-Trigger: Maximize only
-Position: Next to current
-```
-([git](https://github.com/Aetf/kwin-maxmize-to-new-desktop#window-class-blacklist-in-configuration-is-blank))
-
-</details>
-
-# Miscellaneous
-
-<details>
-<summary>Click to expand!</summary>
+## Miscellaneous
 	
-## Fetch on Terminal Start
-After installing and enabling zsh and oh-my-zsh with powerlevel10k, create file `~/.zshenv` and do the following:
-- Install fastfetch-git from pamac.
-- Add `fastfetch --load-config paleofetch` in `~/.zshenv`
+### Fetch on Terminal Start
+Install fastfetch 
+```
+sudo pacman -S fastfetch
+```
+Copy the fastfetch config from the repo tothe relevant directory and add `fastfetch` to the top of your `.zshrc` file.
 
-## Key delay
-Reduce key input delay to 250 ms for a better keyboard experience.
 
-## AUR Helper
-You can install `paru`, an AUR helper like this:
-`cd ~ && mkdir paru && git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -sci && cd ~ && rm -r paru/`
-
-After installing `paru`, you can use it like pacman to install AUR packages.
-
-# QuickShare
+### QuickShare
 [This awesome project](https://github.com/Martichou/rquickshare) provides a rust implementation of quickshare for linux. Works great in my testing. Download the latest AppImage, make it executable and move it to `~/.local/bin`. On first start, it will add itself to autostart. Includes a tray icon as well.
-
-Alternatively, you can use [pamac](https://aur.archlinux.org/packages/pamac-aur/), which also has a gui.
-
-</details>
