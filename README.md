@@ -46,8 +46,7 @@
 # Arch Linux on Asus ROG Zephyrus G14 (G401II)
 Guide to install Arch Linux with btrfs, disc encryption, auto-snapshots, no-noise fan-curves on Asus ROG Zephyrus G14. Credits to [Unim8rix](https://github.com/Unim8trix/G14Arch), this guide is a fork of their guide.
 
-![image](https://github.com/k-amin07/G14Arch/assets/28199865/dff27957-e943-4d99-9192-14ff3ba594f7)
-
+![Screenshot_20240321_020632](https://github.com/k-amin07/G14Arch/assets/28199865/4f619b9e-a792-40ed-be7e-f3e9f17a4b8c)
 
 ## Basic Install
 
